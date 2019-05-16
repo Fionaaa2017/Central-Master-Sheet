@@ -1,0 +1,942 @@
+
+
+Sub iGlesUSD()
+
+Dim InboundCalls As Range
+Dim OutboundCalls As Range
+Dim r As Range
+Dim SameDayEntries As Range
+Dim NextDayEntries As Range
+Dim i As Integer
+Dim Number As Double
+
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+iGles.Range("C1:E100").ClearContents
+iGles.Range("C1:E100").ClearFormats
+
+iGles.Range("M1:O100").ClearContents
+iGles.Range("M1:O100").ClearFormats
+
+
+Inbound.Activate
+Set InboundCalls = Range("C13", Range("C12").End(xlDown))
+
+Outbound.Activate
+Set OutboundCalls = Outbound.Range("C13", Range("C12").End(xlDown))
+
+iGles.Range("C2").Value = "SAME DAY ENTRY"
+With iGles
+For Each r In InboundCalls
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Deliver to BMO"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Deliver to BMO"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Return to BMO"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Return to BMO"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+
+For Each r In OutboundCalls
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Return to Counterparty"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Return to Counterparty"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+
+iGles.Range("M2").Value = "NEXT DAY ENTRY"
+
+For Each r In InboundCalls
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Deliver to BMO"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Deliver to BMO"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Return to BMO"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Return to BMO"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+For Each r In OutboundCalls
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "USD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Return to Counterparty"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Return to Counterparty"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+iGles.Activate
+
+
+Range("A1:Z100").Font.Name = "Times New Roman"
+Range("C2").Font.Color = vbRed
+Range("C2").Font.Bold = True
+Range("M2").Font.Color = vbRed
+Range("M2").Font.Bold = True
+
+Range("C2", Range("C2").End(xlDown)).Columns.AutoFit
+Range("D3", Range("D3").End(xlDown)).Columns.AutoFit
+Range("M2", Range("M2").End(xlDown)).Columns.AutoFit
+Range("N3", Range("N3").End(xlDown)).Columns.AutoFit
+
+If Range("C3") <> "" Then
+
+    Set SameDayEntries = Range("C3", Range("C2").End(xlDown))
+    
+    i = 0
+    For Each r In SameDayEntries
+       i = i + 1
+       Number = i / 20
+        If Number = Int(Number) Then
+            Range(r, r.Offset(0, 2)).Borders(xlEdgeBottom).Weight = xlThick
+        
+        End If
+    
+    Next r
+End If
+
+
+If Range("M3") <> "" Then
+Set SameDayEntries = Range("M3", Range("M2").End(xlDown))
+
+i = 0
+For Each r In SameDayEntries
+   i = i + 1
+   Number = i / 20
+    If Number = Int(Number) Then
+        Range(r, r.Offset(0, 2)).Borders(xlEdgeBottom).Weight = xlThick
+    
+    End If
+    Next r
+End If
+
+
+
+End With
+End Sub
+
+Sub iGlesCDN()
+
+Dim InboundCalls As Range
+Dim OutboundCalls As Range
+Dim r As Range
+Dim SameDayEntries As Range
+Dim NextDayEntries As Range
+Dim i As Integer
+Dim Number As Double
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+
+iGlesCAD.Range("A1:AF100").ClearContents
+iGlesCAD.Range("A1:AF100").ClearFormats
+iGlesCAD.Range("A1:AF100").Interior.Color = vbWhite
+
+Inbound.Activate
+Set InboundCalls = Range("C13", Range("C12").End(xlDown))
+
+Outbound.Activate
+Set OutboundCalls = Outbound.Range("C13", Range("C12").End(xlDown))
+
+iGlesCAD.Range("C2").Value = "SAME DAY ENTRY"
+With iGlesCAD
+For Each r In InboundCalls
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 1).Value = "Deliver to BMO"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Deliver to BMO"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 1).Value = "Return to BMO"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Return to BMO"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+
+For Each r In OutboundCalls
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 1).Value = "Return to Counterparty"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Return to Counterparty"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+
+iGlesCAD.Range("M2").Value = "NEXT DAY ENTRY"
+
+For Each r In InboundCalls
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 1).Value = "Deliver to BMO"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Deliver to BMO"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 1).Value = "Return to BMO"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Return to BMO"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+For Each r In OutboundCalls
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If UCase(r.Offset(0, 3).Value) = "CAD" And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 1).Value = "Return to Counterparty"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Return to Counterparty"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+
+iGlesCAD.Activate
+
+
+Range("A1:Z100").Font.Name = "Times New Roman"
+Range("C2").Font.Color = vbRed
+Range("C2").Font.Bold = True
+Range("M2").Font.Color = vbRed
+Range("M2").Font.Bold = True
+
+Range("C2", Range("C2").End(xlDown)).Columns.AutoFit
+Range("D3", Range("D3").End(xlDown)).Columns.AutoFit
+Range("M2", Range("M2").End(xlDown)).Columns.AutoFit
+Range("N3", Range("N3").End(xlDown)).Columns.AutoFit
+
+If Not (Range("C3") = "") Then
+Set SameDayEntries = Range("C3", Range("C2").End(xlDown))
+
+i = 0
+For Each r In SameDayEntries
+   i = i + 1
+   Number = i / 20
+    If Number = Int(Number) Then
+        Range(r, r.Offset(0, 2)).Borders(xlEdgeBottom).Weight = xlThick
+    
+    End If
+
+Next r
+
+End If
+
+
+
+If Range("M3") <> "" Then
+Set SameDayEntries = Range("M3", Range("M2").End(xlDown))
+
+i = 0
+For Each r In SameDayEntries
+   i = i + 1
+   Number = i / 20
+    If Number = Int(Number) Then
+        Range(r, r.Offset(0, 2)).Borders(xlEdgeBottom).Weight = xlThick
+    
+    End If
+
+Next r
+
+End If
+
+
+
+End With
+End Sub
+
+
+Sub CopyFirstBatch()
+
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+
+Set batch = Range("C3", Range("C2").End(xlDown))
+
+i = Range("C3", Range("C2").End(xlDown)).Count
+
+If i > 20 Then
+    Range("C3:E22").Copy
+Else
+    Range("C3", Range("C2").End(xlDown).Offset(0, 2)).Copy
+    
+End If
+
+End Sub
+
+Sub CopySecondBatch()
+
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+
+Set batch = Range("C3", Range("C2").End(xlDown))
+
+i = Range("C3", Range("C2").End(xlDown)).Count
+
+If i < 21 Then
+MsgBox "There is only 1 batch!"
+Exit Sub
+End If
+
+If i > 40 Then
+    Range("C9:E42").Copy
+Else
+    Range("C23", Range("C8").End(xlDown).Offset(0, 2)).Copy
+    
+End If
+
+End Sub
+
+
+Sub CopyFirstBatchND()
+
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+
+Set batch = Range("M3", Range("M2").End(xlDown))
+
+i = Range("M3", Range("M2").End(xlDown)).Count
+
+If i > 20 Then
+    Range("M3:O22").Copy
+Else
+    Range("M3", Range("M2").End(xlDown).Offset(0, 2)).Copy
+    
+End If
+
+End Sub
+
+Sub CopySecondBatchND()
+
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+
+Set batch = Range("M3", Range("M2").End(xlDown))
+
+i = Range("M3", Range("M2").End(xlDown)).Count
+
+If i < 7 Then
+MsgBox "There is only 1 batch!"
+Exit Sub
+End If
+
+If i > 40 Then
+    Range("M9:O42").Copy
+Else
+    Range("M23", Range("M8").End(xlDown).Offset(0, 2)).Copy
+    
+End If
+
+End Sub
+
+Sub Copy1()
+Range("C3:E3").Copy
+End Sub
+Sub Copy2()
+Range("C4:E4").Copy
+End Sub
+Sub Copy3()
+Range("C5:E5").Copy
+End Sub
+
+Sub Copy4()
+Range("M3:O3").Copy
+End Sub
+Sub Copy5()
+Range("M4:O4").Copy
+End Sub
+Sub Copy6()
+Range("M5:O5").Copy
+End Sub
+
+Sub CreateWireLog()
+
+Dim myRange As Range
+Dim r As Range
+Dim CurrencyName As String
+
+Dim ReturnC As String, DeliverC As String
+
+Dim ClearSheet As String
+
+
+ClearSheet = InputBox("Clear Wire Template?", , "Yes")
+
+If ClearSheet = "Yes" Then wsWires.Range("D14:E126").ClearContents
+
+ReturnC = "Return to Counterparty"
+DeliverC = "Deliver to Counterparty"
+
+Set myRange = Selection
+
+If ActiveSheet.Name = "iGLES" Then
+    CurrencyName = "USD"
+ElseIf ActiveSheet.Name = "iGLES(CAD)" Then
+    CurrencyName = "CAD"
+Else:
+    MsgBox "This procedure can only be completed on sheets with the name 'iGLES' or 'iGLES(CAD)'"
+    Exit Sub
+End If
+
+
+For Each r In myRange
+    If r.Offset(0, 1).Value = ReturnC Or r.Offset(0, 1).Value = DeliverC Then
+        wsWires.Range("E128").End(xlUp).Offset(1, 0).Value = r.Offset(0, 2).Value * 1000000
+        wsWires.Range("E128").End(xlUp).Offset(0, -1).Value = CurrencyName
+    End If
+Next r
+
+End Sub
+
+
+Sub CreateWireEmail()
+
+Dim olApp As Outlook.Application
+Dim olEmail As Outlook.MailItem
+
+Set olApp = New Outlook.Application
+Set olEmail = olApp.CreateItem(olMailItem)
+
+With olEmail
+    .Subject = "Wire Log"
+    .To = Range("J3").Value
+    .BodyFormat = olFormatRichText
+    .Display
+End With
+
+Range("D14", Range("E128").End(xlUp)).Copy
+
+
+End Sub
+
+
+
+
+Sub iGlesEURO()
+
+Dim InboundCalls As Range
+Dim OutboundCalls As Range
+Dim r As Range
+Dim SameDayEntries As Range
+Dim NextDayEntries As Range
+Dim i As Integer
+Dim Number As Double
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+iGlesEUR.Range("A1:AF100").ClearContents
+iGlesEUR.Range("A1:AF100").ClearFormats
+iGlesEUR.Range("A1:AF100").Interior.Color = vbWhite
+
+Inbound.Activate
+Set InboundCalls = Inbound.Range("C13", Range("C12").End(xlDown))
+
+Outbound.Activate
+Set OutboundCalls = Outbound.Range("C13", Range("C12").End(xlDown))
+
+iGlesEUR.Range("C2").Value = "SAME DAY ENTRY"
+With iGlesEUR
+For Each r In InboundCalls
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Deliver to BMO"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Deliver to BMO"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Return to BMO"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Return to BMO"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+
+For Each r In OutboundCalls
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("C3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C3").Value = r.Value & "LGY"
+            Else
+            .Range("C3").Value = r.Value
+            End If
+            .Range("C3").Offset(0, 1).Value = "Return to Counterparty"
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Return to Counterparty"
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+
+iGlesEUR.Range("M2").Value = "NEXT DAY ENTRY"
+
+For Each r In InboundCalls
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Deliver to BMO"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Deliver to BMO"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Return to BMO"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Return to BMO"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+For Each r In OutboundCalls
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Deliver to Counterparty"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+    
+    If (UCase(r.Offset(0, 3).Value) = "EUR" Or UCase(r.Offset(0, 3).Value) = "JPY") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+       If .Range("M3").Value = "" Then
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M3").Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M3").Value = r.Value & "LGY"
+            Else
+            .Range("M3").Value = r.Value
+            End If
+            .Range("M3").Offset(0, 1).Value = "Return to Counterparty"
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        Else
+            If UCase(r.Offset(0, 11)) = "REGVM" Or UCase(r.Offset(0, 11)) = "REG VM" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            ElseIf UCase(r.Offset(0, 11)) = "LGY" Then
+                .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value & "LGY"
+            Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            End If
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Return to Counterparty"
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4) / 1000000
+        End If
+    End If
+Next r
+
+iGlesEUR.Activate
+
+
+Range("A1:Z100").Font.Name = "Times New Roman"
+Range("C2").Font.Color = vbRed
+Range("C2").Font.Bold = True
+Range("M2").Font.Color = vbRed
+Range("M2").Font.Bold = True
+
+Range("C2", Range("C2").End(xlDown)).Columns.AutoFit
+Range("D3", Range("D3").End(xlDown)).Columns.AutoFit
+Range("M2", Range("M2").End(xlDown)).Columns.AutoFit
+Range("N3", Range("N3").End(xlDown)).Columns.AutoFit
+
+If Range("C3") <> "" Then
+
+    Set SameDayEntries = Range("C3", Range("C2").End(xlDown))
+    
+    i = 0
+    For Each r In SameDayEntries
+       i = i + 1
+       Number = i / 20
+        If Number = Int(Number) Then
+            Range(r, r.Offset(0, 2)).Borders(xlEdgeBottom).Weight = xlThick
+        
+        End If
+    
+    Next r
+End If
+
+
+If Range("M3") <> "" Then
+Set SameDayEntries = Range("M3", Range("M2").End(xlDown))
+
+i = 0
+For Each r In SameDayEntries
+   i = i + 1
+   Number = i / 20
+    If Number = Int(Number) Then
+        Range(r, r.Offset(0, 2)).Borders(xlEdgeBottom).Weight = xlThick
+    
+    End If
+    Next r
+End If
+
+
+
+End With
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
