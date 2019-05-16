@@ -1,0 +1,575 @@
+Sub SameDayiGles()
+
+Dim FileName As String
+Dim IGlesWb As Workbook
+Dim WorkWb As Workbook
+Dim wb As Workbook
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+Dim iGlesEntries As Range
+
+
+Set WorkWb = ActiveWorkbook
+iGles.Activate
+
+If Range("AV1") = "" Then
+    Call InputFilePath
+End If
+
+FileName = Range("AV1").Value
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like ("*ibuk*") Then
+        Set IGlesWb = wb
+    End If
+Next wb
+
+On Error GoTo ResetFolder
+If IGlesWb Is Nothing Then
+    Set IGlesWb = Workbooks.Open(Range("AV1").Value)
+End If
+
+WorkWb.Activate
+iGles.Activate
+
+If Range("C3") = "" Then
+    MsgBox "No Same Day entries!", vbExclamation
+    Exit Sub
+End If
+
+
+    Set batch = Range("C3", Range("C2").End(xlDown))
+    i = Range("C3", Range("C2").End(xlDown)).Count
+
+If i > 20 Then
+    Set iGlesEntries = Range("C3:E22")
+Else
+    Set iGlesEntries = Range("C3", Range("C2").End(xlDown).Offset(0, 2))
+End If
+
+IGlesWb.Activate
+Sheets("USD").Activate
+
+Range("B3:D22").ClearContents
+
+iGlesEntries.Copy
+
+Range("B3").PasteSpecial xlPasteValues
+Application.CutCopyMode = False
+Range("B3").Select
+
+Exit Sub
+ResetFolder:
+Call InputFilePath
+Resume Next
+
+
+End Sub
+
+Sub SameDayiGlesEUR()
+
+Dim FileName As String
+Dim IGlesWb As Workbook
+Dim WorkWb As Workbook
+Dim wb As Workbook
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+Dim iGlesEntries As Range
+
+
+Set WorkWb = ActiveWorkbook
+iGlesEUR.Activate
+
+If Range("AV1") = "" Then
+    Call InputFilePath
+End If
+
+FileName = Range("AV1").Value
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like ("*ibuk*") Then
+        Set IGlesWb = wb
+    End If
+Next wb
+
+On Error GoTo ResetFolder
+If IGlesWb Is Nothing Then
+    Set IGlesWb = Workbooks.Open(Range("AV1").Value)
+End If
+
+WorkWb.Activate
+iGlesEUR.Activate
+
+If Range("C3") = "" Then
+    MsgBox "No Same Day entries!", vbExclamation
+    Exit Sub
+End If
+
+
+    Set batch = Range("C3", Range("C2").End(xlDown))
+    i = Range("C3", Range("C2").End(xlDown)).Count
+
+If i > 20 Then
+    Set iGlesEntries = Range("C3:E22")
+Else
+    Set iGlesEntries = Range("C3", Range("C2").End(xlDown).Offset(0, 2))
+End If
+
+IGlesWb.Activate
+Sheets("EUR").Activate
+
+Range("B3:D22").ClearContents
+
+iGlesEntries.Copy
+
+Range("B3").PasteSpecial xlPasteValues
+Application.CutCopyMode = False
+Range("B3").Select
+
+Exit Sub
+ResetFolder:
+Call InputFilePath
+Resume Next
+
+
+End Sub
+
+Sub NextDayiGles()
+
+Dim FileName As String
+Dim IGlesWb As Workbook
+Dim WorkWb As Workbook
+Dim wb As Workbook
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+Dim iGlesEntries As Range
+
+
+Set WorkWb = ActiveWorkbook
+iGles.Activate
+
+If Range("AV1") = "" Then
+    Call InputFilePath
+End If
+
+FileName = Range("AV1").Value
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like ("*ibuk*") Then
+        Set IGlesWb = wb
+    End If
+Next wb
+
+On Error GoTo ResetFolder
+If IGlesWb Is Nothing Then
+    Set IGlesWb = Workbooks.Open(Range("AV1").Value)
+End If
+
+WorkWb.Activate
+iGles.Activate
+
+If Range("M3") = "" Then
+    MsgBox "No Next Day entries!", vbExclamation
+    Exit Sub
+End If
+
+
+    Set batch = Range("M3", Range("M2").End(xlDown))
+    i = Range("M3", Range("M2").End(xlDown)).Count
+
+If i > 20 Then
+   Set iGlesEntries = Range("M3:O22")
+Else
+   Set iGlesEntries = Range("M3", Range("M2").End(xlDown).Offset(0, 2))
+End If
+
+IGlesWb.Activate
+Sheets("USD").Activate
+
+Range("B3:D22").ClearContents
+
+iGlesEntries.Copy
+
+Range("B3").PasteSpecial xlPasteValues
+Application.CutCopyMode = False
+Range("B3").Select
+
+Exit Sub
+ResetFolder:
+Call InputFilePath
+Resume Next
+
+End Sub
+
+
+Sub NextDayiGlesEUR()
+
+Dim FileName As String
+Dim IGlesWb As Workbook
+Dim WorkWb As Workbook
+Dim wb As Workbook
+Dim batch As Range
+Dim r As Range
+Dim i As Integer
+Dim iGlesEntries As Range
+
+
+Set WorkWb = ActiveWorkbook
+iGlesEUR.Activate
+
+If Range("AV1") = "" Then
+    Call InputFilePath
+End If
+
+FileName = Range("AV1").Value
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like ("*ibuk*") Then
+        Set IGlesWb = wb
+    End If
+Next wb
+
+On Error GoTo ResetFolder
+If IGlesWb Is Nothing Then
+    Set IGlesWb = Workbooks.Open(Range("AV1").Value)
+End If
+
+WorkWb.Activate
+iGlesEUR.Activate
+
+If Range("M3") = "" Then
+    MsgBox "No Next Day entries!", vbExclamation
+    Exit Sub
+End If
+
+
+    Set batch = Range("M3", Range("M2").End(xlDown))
+    i = Range("M3", Range("M2").End(xlDown)).Count
+
+If i > 20 Then
+   Set iGlesEntries = Range("M3:O22")
+Else
+   Set iGlesEntries = Range("M3", Range("M2").End(xlDown).Offset(0, 2))
+End If
+
+IGlesWb.Activate
+Sheets("EUR").Activate
+
+Range("B3:D22").ClearContents
+
+iGlesEntries.Copy
+
+Range("B3").PasteSpecial xlPasteValues
+Application.CutCopyMode = False
+Range("B3").Select
+
+Exit Sub
+ResetFolder:
+Call InputFilePath
+Resume Next
+
+End Sub
+
+
+
+
+
+Public Function FileInUse(sFileName) As Boolean
+    
+    On Error Resume Next
+    Open sFileName For Binary Access Read Lock Read As #1
+    Close #1
+    FileInUse = IIf(Err.Number > 0, True, False)
+    On Error GoTo 0
+End Function
+
+Sub OpenCMGOps()
+
+    Dim fd As FileDialog
+    Dim ActionClicked As Boolean
+    
+FillPath:
+If Inbound.Range("AW15") = "" Then
+    Set fd = Application.FileDialog(msoFileDialogFolderPicker)
+    fd.AllowMultiSelect = False
+    ActionClicked = fd.Show
+
+    If ActionClicked Then
+        Inbound.Range("AW15").Value = fd.SelectedItems(1)
+        Inbound.Range("AV15").Value = "CMG Ops Directory"
+    Else:
+        MsgBox "You didn't select a folder", vbExclamation
+        Exit Sub
+    End If
+End If
+
+
+
+On Error GoTo ResetFolder
+Call Shell("explorer.exe" & " " & Inbound.Range("AW15").Value, vbNormalFocus)
+
+Exit Sub
+ResetFolder:
+Range("AW15").ClearContents
+GoTo FillPath
+
+
+
+
+End Sub
+
+
+
+Sub OpenHKUpload()
+
+    Dim strFilePath As String
+    Dim xlApp As Object
+    Dim wb As Workbook
+    
+    Dim fd As FileDialog
+    Dim ActionClicked As Boolean
+
+FillPath:
+If Inbound.Range("AW12") = "" Then
+    Set fd = Application.FileDialog(msoFileDialogFilePicker)
+    fd.AllowMultiSelect = False
+    ActionClicked = fd.Show
+
+    If ActionClicked Then
+        Inbound.Range("AW12").Value = fd.SelectedItems(1)
+        Inbound.Range("AV12").Value = "HK Upload File Directory"
+    Else:
+        MsgBox "You didn't select a file", vbExclamation
+        Exit Sub
+    End If
+End If
+
+    strFilePath = Inbound.Range("AW12").Value
+    If strFilePath = "False" Then Exit Sub  'Pressed cancel
+
+    Set xlApp = CreateObject("Excel.Application")
+    xlApp.Visible = True
+    
+    On Error GoTo ResetFolder
+    xlApp.Workbooks.Open strFilePath
+    
+Exit Sub
+ResetFolder:
+Range("AW12").ClearContents
+GoTo FillPath
+    
+End Sub
+
+
+Sub OpenEURFile()
+
+    Dim strFilePath As String
+    Dim xlApp As Object
+    Dim wb As Workbook
+
+    Dim fd As FileDialog
+    Dim ActionClicked As Boolean
+
+FillPath:
+If Inbound.Range("AW13") = "" Then
+    Set fd = Application.FileDialog(msoFileDialogFilePicker)
+    fd.AllowMultiSelect = False
+    ActionClicked = fd.Show
+
+    If ActionClicked Then
+        Inbound.Range("AW13").Value = fd.SelectedItems(1)
+        Inbound.Range("AV13").Value = "EUR File Directory"
+    Else:
+        MsgBox "You didn't select a file", vbExclamation
+        Exit Sub
+    End If
+End If
+
+    
+    strFilePath = Inbound.Range("AW13").Value
+    If strFilePath = "False" Then Exit Sub
+
+    Set xlApp = CreateObject("Excel.Application")
+    xlApp.Visible = True
+    
+    On Error GoTo ResetFolder
+    xlApp.Workbooks.Open strFilePath
+    
+Exit Sub
+ResetFolder:
+Range("AW13").ClearContents
+GoTo FillPath
+    
+End Sub
+
+
+Sub OpenRatingsFile()
+
+    Dim strFilePath As String
+    Dim xlApp As Object
+    Dim wb As Workbook
+
+FillPath:
+If Inbound.Range("AW14") = "" Then
+    Set fd = Application.FileDialog(msoFileDialogFilePicker)
+    fd.AllowMultiSelect = False
+    ActionClicked = fd.Show
+
+    If ActionClicked Then
+        Inbound.Range("AW14").Value = fd.SelectedItems(1)
+        Inbound.Range("AV14").Value = "Ratings File Directory"
+    Else:
+        MsgBox "You didn't select a file", vbExclamation
+        Exit Sub
+    End If
+End If
+    
+    strFilePath = Inbound.Range("AW14").Value
+    If strFilePath = "False" Then Exit Sub
+
+    Set xlApp = CreateObject("Excel.Application")
+    xlApp.Visible = True
+    
+    On Error GoTo ResetFolder
+    xlApp.Workbooks.Open strFilePath
+
+Exit Sub
+ResetFolder:
+Range("AW14").ClearContents
+GoTo FillPath
+
+
+End Sub
+
+Sub iGlesOpenCAD()
+    Dim strFilePath As String
+    Dim xlApp As Object
+    Dim wb As Workbook
+    
+FillPath:
+    If Range("AV1").Value = "" Then Call InputFilePath
+
+    strFilePath = Range("AV1").Value
+    If strFilePath = "False" Then Exit Sub  'Pressed cancel
+
+    Set xlApp = CreateObject("Excel.Application")
+    xlApp.Visible = True
+    
+    On Error GoTo ResetFolder
+    xlApp.Workbooks.Open strFilePath
+    
+Exit Sub
+ResetFolder:
+Range("AV1").ClearContents
+GoTo FillPath
+
+End Sub
+Sub InputFilePath()
+
+Dim fd As FileDialog
+Dim ActionClicked As Boolean
+
+Set fd = Application.FileDialog(msoFileDialogFilePicker)
+fd.AllowMultiSelect = False
+ActionClicked = fd.Show
+
+If ActionClicked Then
+    Range("AV1").Value = fd.SelectedItems(1)
+Else:
+    MsgBox "You didn't select a file", vbExclamation
+    Exit Sub
+End If
+
+End Sub
+
+Sub NewInstanceOfExcel()
+Dim xApp As Excel.Application
+Dim fd As FileDialog
+Dim ActionClicked As Boolean
+Dim Path As String
+Dim wb As Excel.Workbook
+
+Set xApp = New Excel.Application
+
+Set fd = Application.FileDialog(msoFileDialogFilePicker)
+fd.AllowMultiSelect = False
+ActionClicked = fd.Show
+
+If ActionClicked Then Path = fd.SelectedItems(1)
+
+
+If Path <> "" Then
+    Set wb = xApp.Workbooks.Open(Path)
+Else
+    Set wb = xApp.Workbooks.Add
+End If
+xApp.Visible = True
+End Sub
+
+Sub OpenDailyTaskFiles()
+
+Dim strFile As String
+strFile = Inbound.Range("AW19")
+
+On Error GoTo ErrHandler
+Workbooks.Open strFile
+Exit Sub
+
+ErrHandler:
+
+MsgBox " Please ensure file path is updated"
+
+Call DisplayResetFoldersForm
+End Sub
+
+Sub OpenRecord()
+
+Dim strPath As String
+
+strPath = Inbound.Range("AW15") + "\LogSheet Records"
+Call Shell("explorer.exe" & " " & strPath, vbNormalFocus)
+End Sub
+
+Sub iGlesOpenCAD2()
+    Dim strFilePath As String
+    Dim xlApp As Object
+    Dim wb As Workbook
+    
+FillPath:
+    If Range("AV1").Value = "" Then Call InputFilePath
+
+    strFilePath = Range("AV1").Value
+    If strFilePath = "False" Then Exit Sub  'Pressed cancel
+
+'    Set xlApp = CreateObject("Excel.Application")
+'    xlApp.Visible = True
+    
+    On Error GoTo ResetFolder
+    Workbooks.Open strFilePath
+    
+Exit Sub
+ResetFolder:
+Range("AV1").ClearContents
+GoTo FillPath
+
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
