@@ -1,0 +1,483 @@
+Public KillIt As Boolean
+
+Sub SameDayCash()
+
+Dim Calls As Range
+Dim r As Range
+Dim CallsEmails As Range
+Dim TargetRange As Range
+
+
+Application.ScreenUpdating = False
+
+With CashM
+    .Activate
+    
+
+    .Range("A1:AI100").ClearContents
+    .Range("A1:AI100").ClearFormats
+    .Range("A1:AI100").Interior.Color = vbWhite
+    .Range("B2").Value = "INBOUND"
+
+Inbound.Activate
+Set Calls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Today" And r.Offset(0, 4).Value > 0 Then
+        If .Range("B3").Value = "" Then
+            .Range("B3").Value = r
+            .Range("B3").Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("B3").Offset(0, 2).Value = r.Offset(0, 3).Value
+        Else
+            .Range("B2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("B2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("B2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 3).Value
+        End If
+    End If
+Next r
+
+.Range("F2").Value = "OUTBOUND"
+
+Outbound.Activate
+Set Calls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Today" And r.Offset(0, 4).Value > 0 Then
+        If .Range("F3").Value = "" Then
+            .Range("F3").Value = r
+            .Range("F3").Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("F3").Offset(0, 2).Value = r.Offset(0, 3).Value
+        Else
+            .Range("F2").End(xlDown).Offset(1, 0).Value = r
+            .Range("F2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("F2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 3).Value
+        End If
+    End If
+Next r
+
+
+.Activate
+
+If Range("B3").Value = "" And Range("F3").Value = "" Then
+    MsgBox "No Entries"
+    Exit Sub
+ElseIf Range("B3").Value = "" Then
+    Set TargetRange = Range("B2", Range("F2").End(xlDown).Offset(0, 2))
+ElseIf Range("F3").Value = "" Then
+    Set TargetRange = Range("B2", Range("B2").End(xlDown).Offset(0, 6))
+ElseIf (Range("B2", Range("B2").End(xlDown)).rows.Count > Range("F2", Range("F2").End(xlDown)).rows.Count) Then
+    Set TargetRange = Range("B2", Range("B2").End(xlDown).Offset(0, 6))
+Else:
+    Set TargetRange = Range("B2", Range("F2").End(xlDown).Offset(0, 2))
+End If
+
+
+
+Dim BorderIndex As Variant
+   
+   For Each BorderIndex In Array(xlEdgeTop, xlEdgeLeft, xlEdgeBottom, xlEdgeRight, xlInsideHorizontal, xlInsideVertical)
+      With TargetRange.Borders(BorderIndex)
+         .Weight = xlThin
+         .ColorIndex = xlAutomatic
+      End With
+   Next BorderIndex
+
+
+Range("C3:C100").NumberFormat = "#,###"
+Range("G3:G100").NumberFormat = "#,###"
+
+TargetRange.Font.Name = "Times New Roman"
+Range("B2").Font.Bold = True
+Range("F2").Font.Bold = True
+
+Range("B2", Range("B2").End(xlDown)).Columns.AutoFit
+Range("C3", Range("C3").End(xlDown)).Columns.AutoFit
+Range("D3", Range("D3").End(xlDown)).Columns.AutoFit
+Range("F2", Range("F2").End(xlDown)).Columns.AutoFit
+Range("G3", Range("G3").End(xlDown)).Columns.AutoFit
+Range("H3", Range("H3").End(xlDown)).Columns.AutoFit
+
+Range("F3:H500").Sort Key1:=Range("H3"), Order1:=xlAscending
+Range("B3:D500").Sort Key1:=Range("D3"), Order1:=xlAscending
+
+
+Call NextDayCash
+
+End With
+End Sub
+
+Sub NextDayCash()
+
+Dim Calls As Range
+Dim r As Range
+Dim CallsEmails As Range
+Dim TargetRange As Range
+
+
+Application.ScreenUpdating = False
+
+With CashM
+    .Activate
+
+    .Range("M2").Value = "INBOUND"
+
+Inbound.Activate
+Set Calls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4).Value > 0 Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r
+            .Range("M3").Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 3).Value
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("M2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 3).Value
+        End If
+    End If
+Next r
+
+.Range("Q2").Value = "OUTBOUND"
+
+Outbound.Activate
+Set Calls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4).Value > 0 Then
+        If .Range("Q3").Value = "" Then
+            .Range("Q3").Value = r
+            .Range("Q3").Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("Q3").Offset(0, 2).Value = r.Offset(0, 3).Value
+        Else
+            .Range("Q2").End(xlDown).Offset(1, 0).Value = r
+            .Range("Q2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("Q2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 3).Value
+        End If
+    End If
+Next r
+
+
+.Activate
+
+If Range("M3").Value = "" And Range("Q3").Value = "" Then
+    MsgBox "No Entries"
+    Exit Sub
+ElseIf Range("M3").Value = "" Then
+    Set TargetRange = Range("M2", Range("Q2").End(xlDown).Offset(0, 2))
+ElseIf Range("Q3").Value = "" Then
+    Set TargetRange = Range("M2", Range("M2").End(xlDown).Offset(0, 6))
+ElseIf (Range("M2", Range("M2").End(xlDown)).rows.Count > Range("Q2", Range("Q2").End(xlDown)).rows.Count) Then
+    Set TargetRange = Range("M2", Range("M2").End(xlDown).Offset(0, 6))
+Else:
+    Set TargetRange = Range("M2", Range("Q2").End(xlDown).Offset(0, 2))
+End If
+
+
+
+Dim BorderIndex As Variant
+   
+   For Each BorderIndex In Array(xlEdgeTop, xlEdgeLeft, xlEdgeBottom, xlEdgeRight, xlInsideHorizontal, xlInsideVertical)
+      With TargetRange.Borders(BorderIndex)
+         .Weight = xlThin
+         .ColorIndex = xlAutomatic
+      End With
+   Next BorderIndex
+
+
+Range("N3:N100").NumberFormat = "#,###"
+Range("R3:R100").NumberFormat = "#,###"
+
+TargetRange.Font.Name = "Times New Roman"
+Range("M2").Font.Bold = True
+Range("Q2").Font.Bold = True
+
+Range("M2", Range("M2").End(xlDown)).Columns.AutoFit
+Range("N3", Range("N3").End(xlDown)).Columns.AutoFit
+Range("O3", Range("O3").End(xlDown)).Columns.AutoFit
+Range("Q2", Range("Q2").End(xlDown)).Columns.AutoFit
+Range("R3", Range("R3").End(xlDown)).Columns.AutoFit
+Range("S3", Range("S3").End(xlDown)).Columns.AutoFit
+
+Range("Q3:S500").Sort Key1:=Range("S3"), Order1:=xlAscending
+Range("M3:O500").Sort Key1:=Range("O3"), Order1:=xlAscending
+
+
+End With
+End Sub
+
+
+Sub OpenFile()
+
+Dim fd As FileDialog
+Dim ActionClicked As Boolean
+Dim Response As Integer
+
+Application.AskToUpdateLinks = False
+KillIt = False
+
+Set fd = Application.FileDialog(msoFileDialogOpen)
+fd.AllowMultiSelect = False
+
+ActionClicked = fd.Show
+
+If Not ActionClicked Then
+    KillIt = True
+    Exit Sub
+End If
+On Error GoTo ErrorHandling
+
+fd.Execute
+Application.AskToUpdateLinks = True
+
+
+Exit Sub
+ErrorHandling:
+Response = MsgBox("Do you still want to copy the information to the sheets?", vbYesNo, "Continue with Procedure?")
+If Response = vbNo Then KillIt = True
+End Sub
+
+Sub TransferSameDayCash()
+
+Dim Outbound As Range
+Dim Inbound As Range
+Dim r As Range
+Dim wb As Workbook
+Dim WorkWb As Workbook
+Dim CashWb As Workbook
+
+
+Call OpenFile
+If KillIt = True Then
+    Exit Sub
+End If
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    ElseIf LCase(wb.Name) Like "*same day*" Then
+        Set CashWb = wb
+    End If
+Next wb
+
+If CashWb Is Nothing Then
+    MsgBox "The correct Cash Funding Sheet is not open"
+    Exit Sub
+End If
+
+
+WorkWb.Activate
+CashM.Activate
+
+If Range("B3") <> "" Then
+    If Range("B4") = "" Then
+        Set Inbound = Range("B3:D3")
+        Inbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("B4") = "" Then
+                Range("B4").PasteSpecial xlPasteValues
+            Else: Range("B3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    Else
+        Set Inbound = Range("B3", Range("B2").End(xlDown).Offset(0, 2))
+        Inbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("B4") = "" Then
+                Range("B4").PasteSpecial xlPasteValues
+            Else: Range("B3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    End If
+End If
+
+WorkWb.Activate
+CashM.Activate
+
+If Range("F3") <> "" Then
+    If Range("F4") = "" Then
+        Set Outbound = Range("F3:H3")
+        Outbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("G4") = "" Then
+                Range("G4").PasteSpecial xlPasteValues
+            Else: Range("G3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    Else
+        Set Outbound = Range("F3", Range("F2").End(xlDown).Offset(0, 2))
+        Outbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("G4") = "" Then
+                Range("G4").PasteSpecial xlPasteValues
+            Else: Range("G3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    End If
+End If
+
+CashWb.Activate
+Range("C:C").NumberFormat = "#,###"
+Range("H:H").NumberFormat = "#,###"
+Range("A1").Select
+Application.CutCopyMode = False
+End Sub
+Sub TransferNextDayCash()
+
+Dim Outbound As Range
+Dim Inbound As Range
+Dim r As Range
+Dim wb As Workbook
+Dim WorkWb As Workbook
+Dim CashWb As Workbook
+
+
+Call OpenFile
+If KillIt = True Then
+    Exit Sub
+End If
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    ElseIf LCase(wb.Name) Like "*next day*" Then
+        Set CashWb = wb
+    End If
+Next wb
+
+If CashWb Is Nothing Then
+    MsgBox "The correct Cash Funding Sheet is not open"
+    Exit Sub
+End If
+
+
+WorkWb.Activate
+CashM.Activate
+
+If Range("M3") <> "" Then
+    If Range("M4") = "" Then
+        Set Inbound = Range("M3:O3")
+        Inbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("B4") = "" Then
+                Range("B4").PasteSpecial xlPasteValues
+            Else: Range("B3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    Else
+        Set Inbound = Range("M3", Range("M2").End(xlDown).Offset(0, 2))
+        Inbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("B4") = "" Then
+                Range("B4").PasteSpecial xlPasteValues
+            Else: Range("B3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    End If
+End If
+
+WorkWb.Activate
+CashM.Activate
+
+If Range("Q3") <> "" Then
+    If Range("Q4") = "" Then
+        Set Outbound = Range("Q3:S3")
+        Outbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("G4") = "" Then
+                Range("G4").PasteSpecial xlPasteValues
+            Else: Range("G3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    Else
+        Set Outbound = Range("Q3", Range("Q2").End(xlDown).Offset(0, 2))
+        Outbound.Copy
+        CashWb.Activate
+        Worksheets("Associate").Activate
+            If Range("G4") = "" Then
+                Range("G4").PasteSpecial xlPasteValues
+            Else: Range("G3").End(xlDown).Offset(1, 0).PasteSpecial xlPasteValues
+            End If
+    End If
+End If
+
+CashWb.Activate
+Range("C:C").NumberFormat = "#,###"
+Range("H:H").NumberFormat = "#,###"
+Range("A1").Select
+Application.CutCopyMode = False
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+' ****** OUTDATED APPLICATIONS **********
+
+Sub CopyEmail()
+Dim TargetRange As Range
+
+If Range("B3").Value = "" And Range("F3").Value = "" Then
+    MsgBox "No Entries"
+    Exit Sub
+ElseIf Range("B3").Value = "" Then
+    Set TargetRange = Range("B2", Range("F2").End(xlDown).Offset(0, 2))
+ElseIf Range("F3").Value = "" Then
+    Set TargetRange = Range("B2", Range("B2").End(xlDown).Offset(0, 6))
+ElseIf (Range("B2", Range("B2").End(xlDown)).rows.Count > Range("F2", Range("F2").End(xlDown)).rows.Count) Then
+    Set TargetRange = Range("B2", Range("B2").End(xlDown).Offset(0, 6))
+Else:
+    Set TargetRange = Range("B2", Range("F2").End(xlDown).Offset(0, 2))
+End If
+
+TargetRange.Copy
+
+End Sub
+
+
+
+Sub CreateEmail()
+
+Dim olApp As Outlook.Application
+Dim olEmail As Outlook.MailItem
+Dim olInsp As Outlook.Inspector
+Dim TargetRange As Range
+
+
+CashM.Activate
+
+
+If Range("B3").Value = "" And Range("F3").Value = "" Then
+    MsgBox "No Entries"
+    Exit Sub
+ElseIf Range("B3").Value = "" Then
+    Set TargetRange = Range("B2", Range("F2").End(xlDown).Offset(0, 2))
+ElseIf Range("F3").Value = "" Then
+    Set TargetRange = Range("B2", Range("B2").End(xlDown).Offset(0, 6))
+ElseIf (Range("B2", Range("B2").End(xlDown)).rows.Count > Range("F2", Range("F2").End(xlDown)).rows.Count) Then
+    Set TargetRange = Range("B2", Range("B2").End(xlDown).Offset(0, 6))
+Else:
+    Set TargetRange = Range("B2", Range("F2").End(xlDown).Offset(0, 2))
+End If
+
+Set olApp = New Outlook.Application
+Set olEmail = olApp.CreateItem(olMailItem)
+
+With olEmail
+    .Subject = "Same Day Cash/Securities Movements"
+    .To = "Ana1.Crispino@bmo.com;PortRec.Team@bmo.com;Raj.Padhiar@bmo.com;Raj.Padhiar@bmo.com;Guillaume.Allier@bmo.com;Jessie.Xu@bmo.com;Rudolf.Antohe@bmo.com"
+    .CC = "Lung.Choi@bmo.com;Kambiz.Ayagh@bmo.com"
+    .Display
+End With
+
+TargetRange.Copy
+
+
+End Sub
+
