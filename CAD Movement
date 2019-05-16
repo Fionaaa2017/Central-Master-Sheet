@@ -1,0 +1,1318 @@
+
+Sub CADMovement()
+
+Dim InboundCalls As Range
+Dim OutboundCalls As Range
+Dim r As Range
+Dim SameDayEntries As Range
+Dim NextDayEntries As Range
+Dim i As Integer
+Dim Number As Double
+
+Application.ScreenUpdating = False
+
+Call ValidateData
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+CadM.Range("A1:AF100").ClearContents
+CadM.Range("A1:AF100").ClearFormats
+CadM.Range("A1:AF100").Interior.Color = vbWhite
+
+Inbound.Activate
+Set InboundCalls = Range("C13", Range("C12").End(xlDown))
+
+Outbound.Activate
+Set OutboundCalls = Outbound.Range("C13", Range("C12").End(xlDown))
+
+CadM.Range("C2").Value = "SAME DAY MOVEMENT"
+
+With CadM
+For Each r In InboundCalls
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+    And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, -1).Value = "RECEIVE"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, -1).Value = "RECEIVE"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+        And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, -1).Value = "RECEIVE"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, -1).Value = "RECEIVE"
+        End If
+    End If
+Next r
+
+For Each r In OutboundCalls
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+        And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, -1).Value = "DELIVER"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, -1).Value = "DELIVER"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+        And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, -1).Value = "DELIVER"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, -1).Value = "DELIVER"
+        End If
+    End If
+Next r
+
+' *******NEXT DAY ************
+
+CadM.Range("M2").Value = "NEXT DAY MOVEMENT"
+
+For Each r In InboundCalls
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, -1).Value = "RECEIVE"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, -1).Value = "RECEIVE"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, -1).Value = "RECEIVE"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, -1).Value = "RECEIVE"
+        End If
+    End If
+Next r
+
+For Each r In OutboundCalls
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, -1).Value = "DELIVER"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, -1).Value = "DELIVER"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "1" _
+        Or Left(r.Offset(0, 3), 1) = "0" _
+        Or Left(r.Offset(0, 3), 1) = "5" _
+        Or Left(r.Offset(0, 3), 1) = "6" _
+        Or Left(r.Offset(0, 3), 1) = "4" _
+        Or Left(r.Offset(0, 3), 1) = "7" _
+        Or Left(r.Offset(0, 3), 1) = "8") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, -1).Value = "DELIVER"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 2).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, -1).Value = "DELIVER"
+        End If
+    End If
+Next r
+
+Call CadPledge
+
+CadM.Activate
+
+Range("A1:Z100").Font.Name = "Times New Roman"
+Range("C2").Font.Color = vbRed
+Range("C2").Font.Bold = True
+Range("M2").Font.Color = vbRed
+Range("M2").Font.Bold = True
+
+
+
+Range("E3:E100").NumberFormat = "#,###"
+Range("O3:O100").NumberFormat = "#,###"
+
+
+Call CadSEG
+
+Range("C3", Range("C3").End(xlDown)).Columns.AutoFit
+Range("G3", Range("G3").End(xlDown)).Columns.AutoFit
+Range("B3", Range("B3").End(xlDown)).Columns.AutoFit
+Range("M3", Range("M3").End(xlDown)).Columns.AutoFit
+Range("Q3", Range("Q3").End(xlDown)).Columns.AutoFit
+Range("L3", Range("L3").End(xlDown)).Columns.AutoFit
+Range("O3", Range("O3").End(xlDown)).Columns.AutoFit
+Range("E3", Range("E3").End(xlDown)).Columns.AutoFit
+
+End With
+
+Application.ScreenUpdating = True
+End Sub
+
+Sub USDSameDayMovement()
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+Dim InboundCalls As Range
+Dim OutboundCalls As Range
+Dim r As Range
+Dim SameDayEntries As Range
+Dim NextDayEntries As Range
+Dim i As Integer
+Dim Number As Double
+Dim MBS As Boolean
+
+Application.ScreenUpdating = False
+
+Call ValidateData
+
+UsdSD.Range("A1:AE100").ClearContents
+UsdSD.Range("A1:AE100").ClearFormats
+UsdSD.Range("A1:AE100").Interior.Color = vbWhite
+
+Inbound.Activate
+Set InboundCalls = Range("C13", Range("C12").End(xlDown))
+
+Outbound.Activate
+Set OutboundCalls = Outbound.Range("C13", Range("C12").End(xlDown))
+
+With UsdSD
+
+.Range("A2").Value = "BMO PLEDGES NEW COLLATERAL"
+.Range("F2").Value = "COUNTERPARTY RETURNING BMO COLLATERAL"
+.Range("M2").Value = "NEW COUNTERPARTY PLEDGES"
+.Range("R2").Value = "BMO RETURNING COUNTERPARY'S COLLATERAL"
+
+MBS = False
+For Each r In InboundCalls
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3") = "" Then
+            .Range("M3").Value = r.Value
+            .Range("N3").Value = r.Offset(0, 4).Value
+            .Range("O3").Value = Right(r.Offset(0, 3), 3)
+            .Range("P3").Value = r.Offset(0, 3)
+            
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("M2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("M2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("M2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 2).Value = "Return" Then
+        If .Range("F3") = "" Then
+            .Range("F3").Value = r.Value
+            .Range("G3").Value = r.Offset(0, 4).Value
+            .Range("H3").Value = Right(r.Offset(0, 3), 3)
+            .Range("I3").Value = r.Offset(0, 3)
+        Else
+            .Range("F2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("F2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("F2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("F2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+    End If
+    
+    If Left(r.Offset(0, 3), 1) = "3" Then
+        .Range("Y14").Value = "Ensure MBS Sheet is Updated"
+        .Range("Y14:AB14").Interior.Color = vbYellow
+        .Range("Y14").Font.Name = "Times New Roman"
+        .Range("Y14").Font.Size = "14"
+        
+    End If
+    
+    
+Next r
+
+For Each r In OutboundCalls
+    If UCase(Left(r.Offset(0, 3), 1)) = "S" Or _
+     UCase(Left(r.Offset(0, 3), 1)) = "P" _
+     And UCase(Right(r.Offset(0, 3), 3)) <> "CAD" _
+     And r.Offset(0, 5).Value = "Today" And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("A3") = "" Then
+            .Range("A3").Value = r.Value
+            .Range("B3").Value = r.Offset(0, 4).Value / 1000000
+        Else
+            .Range("A2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("A2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value / 1000000
+        End If
+
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 2).Value = "Return" Then
+        If .Range("R3") = "" Then
+            .Range("R3").Value = r.Value
+            .Range("S3").Value = r.Offset(0, 4).Value
+            .Range("T3").Value = Right(r.Offset(0, 3), 3)
+            .Range("U3").Value = r.Offset(0, 3)
+            
+        Else
+            .Range("R2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("R2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("R2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("R2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Today" And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("A3") = "" Then
+            .Range("A3").Value = r.Value
+            .Range("B3").Value = r.Offset(0, 4).Value
+            .Range("C3").Value = Right(r.Offset(0, 3), 3)
+            .Range("D3").Value = r.Offset(0, 3)
+        Else
+            .Range("A2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("A2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("A2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("A2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+
+    End If
+    
+    If Left(r.Offset(0, 3), 1) = "3" Then
+        .Range("Y14").Value = "Ensure MBS Sheet is Updated"
+        .Range("Y14:AB14").Interior.Color = vbYellow
+        .Range("Y14").Font.Name = "Times New Roman"
+        .Range("Y14").Font.Size = "14"
+    End If
+    
+Next r
+
+.Activate
+
+Range("A1:X100").Font.Name = "Times New Roman"
+Range("A2:D2").Merge
+Range("F2:K2").Merge
+Range("M2:P2").Merge
+Range("R2:W2").Merge
+
+.Range("A2").Font.Bold = True
+.Range("F2").Font.Bold = True
+.Range("M2").Font.Bold = True
+.Range("R2").Font.Bold = True
+.Range("A2").Font.Underline = True
+.Range("F2").Font.Underline = True
+.Range("M2").Font.Underline = True
+.Range("R2").Font.Underline = True
+.Range("A2").Interior.Color = vbRed
+.Range("F2").Interior.Color = vbGreen
+.Range("M2").Interior.Color = vbGreen
+.Range("R2").Interior.Color = vbRed
+
+
+Range("E2:E100").Borders(xlEdgeLeft).Weight = xlThin
+Range("L2:L100").Borders(xlEdgeLeft).Weight = xlThin
+Range("Q2:Q100").Borders(xlEdgeLeft).Weight = xlThin
+Range("X2:X100").Borders(xlEdgeLeft).Weight = xlThin
+Range("E2:E100").Borders(xlEdgeRight).Weight = xlThin
+Range("L2:L100").Borders(xlEdgeRight).Weight = xlThin
+Range("Q2:Q100").Borders(xlEdgeRight).Weight = xlThin
+
+Range("A3:A100").Columns.AutoFit
+Range("F3:F100").Columns.AutoFit
+Range("M3:M100").Columns.AutoFit
+Range("R3:R100").Columns.AutoFit
+Range("G3:G100").NumberFormat = "#,###"
+Range("N3:N100").NumberFormat = "#,###"
+Range("S3:S100").NumberFormat = "#,###"
+Range("B3:B100").Columns.AutoFit
+Range("G3:G100").Columns.AutoFit
+Range("N3:N100").Columns.AutoFit
+Range("S3:S100").Columns.AutoFit
+
+End With
+Application.ScreenUpdating = True
+End Sub
+
+
+
+Sub USDNextDayMovement()
+
+Dim InboundCalls As Range
+Dim OutboundCalls As Range
+Dim r As Range
+Dim SameDayEntries As Range
+Dim NextDayEntries As Range
+Dim i As Integer
+Dim Number As Double
+
+Application.ScreenUpdating = False
+Call ValidateData
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+
+UsdND.Range("A1:AE100").ClearContents
+UsdND.Range("A1:AE100").ClearFormats
+UsdND.Range("A1:AE100").Interior.Color = vbWhite
+
+Inbound.Activate
+Set InboundCalls = Range("C13", Range("C12").End(xlDown))
+
+Outbound.Activate
+Set OutboundCalls = Outbound.Range("C13", Range("C12").End(xlDown))
+
+With UsdND
+
+.Range("A2").Value = "BMO PLEDGES NEW COLLATERAL"
+.Range("F2").Value = "COUNTERPARTY RETURNING BMO COLLATERAL"
+.Range("M2").Value = "NEW COUNTERPARTY PLEDGES"
+.Range("R2").Value = "BMO RETURNING COUNTERPARY'S COLLATERAL"
+
+
+For Each r In InboundCalls
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3") = "" Then
+            .Range("M3").Value = r.Value
+            .Range("N3").Value = r.Offset(0, 4).Value
+            .Range("O3").Value = Right(r.Offset(0, 3), 3)
+            .Range("P3").Value = r.Offset(0, 3)
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("M2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("M2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("M2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 2).Value = "Return" Then
+        If .Range("F3") = "" Then
+            .Range("F3").Value = r.Value
+            .Range("G3").Value = r.Offset(0, 4).Value
+            .Range("H3").Value = Right(r.Offset(0, 3), 3)
+            .Range("I3").Value = r.Offset(0, 3)
+        Else
+            .Range("F2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("F2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("F2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("F2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+
+    End If
+    
+    If Left(r.Offset(0, 3), 1) = "3" Then
+        .Range("Y14").Value = "Ensure MBS Sheet is Updated"
+        .Range("Y14:AB14").Interior.Color = vbYellow
+        .Range("Y14").Font.Name = "Times New Roman"
+        .Range("Y14").Font.Size = "14"
+    End If
+    
+    
+Next r
+
+For Each r In OutboundCalls
+    If UCase(Left(r.Offset(0, 3), 1)) = "S" Or _
+     UCase(Left(r.Offset(0, 3), 1)) = "P" _
+     And UCase(Right(r.Offset(0, 3), 3)) <> "CAD" _
+     And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("A3") = "" Then
+            .Range("A3").Value = r.Value
+            .Range("B3").Value = r.Offset(0, 4).Value / 1000000
+        Else
+            .Range("A2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("A2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value / 1000000
+        End If
+
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 2).Value = "Return" Then
+        If .Range("R3") = "" Then
+            .Range("R3").Value = r.Value
+            .Range("S3").Value = r.Offset(0, 4).Value
+            .Range("T3").Value = Right(r.Offset(0, 3), 3)
+            .Range("U3").Value = r.Offset(0, 3)
+        Else
+            .Range("R2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("R2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("R2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("R2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" Or Left(r.Offset(0, 3), 1) = "3") And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("A3") = "" Then
+            .Range("A3").Value = r.Value
+            .Range("B3").Value = r.Offset(0, 4).Value
+            .Range("C3").Value = Right(r.Offset(0, 3), 3)
+            .Range("D3").Value = r.Offset(0, 3)
+        Else
+            .Range("A2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("A2").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4).Value
+            .Range("A2").End(xlDown).Offset(0, 2).Value = Right(r.Offset(0, 3), 3)
+            .Range("A2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 3)
+        End If
+
+    End If
+    
+    If Left(r.Offset(0, 3), 1) = "3" Then
+        .Range("Y14").Value = "Ensure MBS Sheet is Updated"
+        .Range("Y14:AB14").Interior.Color = vbYellow
+        .Range("Y14").Font.Name = "Times New Roman"
+        .Range("Y14").Font.Size = "14"
+    End If
+    
+    
+Next r
+
+.Activate
+
+Range("A1:X100").Font.Name = "Times New Roman"
+Range("A2:D2").Merge
+Range("F2:K2").Merge
+Range("M2:P2").Merge
+Range("R2:W2").Merge
+
+.Range("A2").Font.Bold = True
+.Range("F2").Font.Bold = True
+.Range("M2").Font.Bold = True
+.Range("R2").Font.Bold = True
+.Range("A2").Font.Underline = True
+.Range("F2").Font.Underline = True
+.Range("M2").Font.Underline = True
+.Range("R2").Font.Underline = True
+.Range("A2").Interior.Color = vbRed
+.Range("F2").Interior.Color = vbGreen
+.Range("M2").Interior.Color = vbGreen
+.Range("R2").Interior.Color = vbRed
+
+
+Range("E2:E100").Borders(xlEdgeLeft).Weight = xlThin
+Range("L2:L100").Borders(xlEdgeLeft).Weight = xlThin
+Range("Q2:Q100").Borders(xlEdgeLeft).Weight = xlThin
+Range("X2:X100").Borders(xlEdgeLeft).Weight = xlThin
+Range("E2:E100").Borders(xlEdgeRight).Weight = xlThin
+Range("L2:L100").Borders(xlEdgeRight).Weight = xlThin
+Range("Q2:Q100").Borders(xlEdgeRight).Weight = xlThin
+
+Range("A3:A100").Columns.AutoFit
+Range("F3:F100").Columns.AutoFit
+Range("M3:M100").Columns.AutoFit
+Range("R3:R100").Columns.AutoFit
+Range("G3:G100").NumberFormat = "#,###"
+Range("N3:N100").NumberFormat = "#,###"
+Range("S3:S100").NumberFormat = "#,###"
+Range("B3:B100").Columns.AutoFit
+Range("G3:G100").Columns.AutoFit
+Range("N3:N100").Columns.AutoFit
+Range("S3:S100").Columns.AutoFit
+
+End With
+Application.ScreenUpdating = True
+End Sub
+
+Sub CadPledge()
+
+Dim mCalls As Range
+Dim r As Range
+
+CadM.Range("H15:K50").ClearContents
+CadM.Range("H15").Value = "NEW PLEDGE"
+
+Outbound.Activate
+
+Set mCalls = Range("C13", Range("C12").End(xlDown))
+
+
+With CadM
+For Each r In mCalls
+    If UCase(Left(r.Offset(0, 3), 1)) = "S" _
+    Or UCase(Left(r.Offset(0, 3), 1)) = "P" _
+    And UCase(Right(r.Offset(0, 3), 3)) = "CAD" Then
+         
+        If .Range("H16").Value = "" Then
+             .Range("H16").Value = r.Value
+             .Range("I16").Value = r.Offset(0, 4).Value / 1000000
+             
+                If r.Offset(0, 5).Value = "Today" Then
+                    .Range("K16").Value = "=Today()"
+                Else: .Range("K16").Value = "=Today()+1"
+             
+                End If
+        Else:
+                .Range("H15").End(xlDown).Offset(1, 0).Value = r.Value
+                .Range("H15").End(xlDown).Offset(0, 1).Value = r.Offset(0, 4) / 1000000
+                
+                If r.Offset(0, 5).Value = "Today" Then
+                    .Range("H16").End(xlDown).Offset(0, 3) = "=Today()"
+                Else: .Range("H16").End(xlDown).Offset(0, 3) = "=Today()+1"
+                End If
+        End If
+        
+    End If
+Next r
+
+
+.Range("H15:I15").Interior.Color = vbRed
+.Range("K15").Value = "DATE"
+
+Range("H12:H100").Columns.AutoFit
+Range("I12:I100").Columns.AutoFit
+Range("K12:K100").Columns.AutoFit
+    
+
+End With
+End Sub
+
+
+
+Sub CadSEG()
+
+Dim r As Range
+Dim CallsToday As Range
+Dim CallsNextDay As Range
+Dim SEG As Range
+Dim SegList As Range
+
+
+SegSheet.Visible = xlSheetVisible
+
+SegSheet.Activate
+
+Set SegList = Range("A2", Range("A1").End(xlDown))
+
+CadM.Activate
+If Range("C3") = "" And Range("M3") = "" Then
+    Exit Sub
+End If
+
+If Range("C3") <> "" Then
+    Set CallsToday = Range("C3", Range("C2").End(xlDown))
+End If
+
+If Range("M3") <> "" Then
+    Set CallsNextDay = Range("M3", Range("M2").End(xlDown))
+End If
+
+If Not (CallsToday Is Nothing) Then
+    For Each r In CallsToday
+        For Each SEG In SegList
+            If r.Value = SEG.Value Then
+                Range(r.Offset(0, -1), r.Offset(0, 4)).Font.Bold = True
+                MsgBox r.Value & " should be on the SEG Sheet", vbExclamation
+            End If
+        Next SEG
+    Next r
+End If
+
+If Not (CallsNextDay Is Nothing) Then
+    For Each r In CallsNextDay
+        For Each SEG In SegList
+            If r.Value = SEG.Value Then
+                Range(r.Offset(0, -1), r.Offset(0, 4)).Font.Bold = True
+                MsgBox r.Value & " is a SEG account. If it should not be placed on the SEG sheet, UNBOLD the font above!", vbExclamation
+            End If
+        Next SEG
+    Next r
+End If
+
+CadM.Activate
+SegSheet.Visible = xlSheetHidden
+
+
+End Sub
+
+
+Sub CopyCAD1()
+Range("H16:I16").Copy
+End Sub
+Sub CopyCAD2()
+Range("H17:I17").Copy
+End Sub
+Sub CopyCAD3()
+Range("H18:I18").Copy
+End Sub
+
+Sub SecurMovementSameD()
+Dim wb As Workbook
+Dim wbMBS, wbCollat As Workbook
+Dim ws, ws1, ws2, ws3 As Worksheet
+Dim iAlloc As Long
+Dim sFile As String
+
+
+'Need to set to Identify MBS or Other Securities
+'paths change as flexible since need to take into account for path update
+
+
+sFile = Inbound.Range("AW15").Value
+sFile = sFile + "\BMO_Collateral MBS.xls"
+
+'sFile = "C:\Users\fliu10\Desktop\BMO_Collateral MBS.xls"
+Set wbMBS = Workbooks.Open(sFile)
+Set ws = ThisWorkbook.Sheets("USD <SD>")
+
+
+'Answer1 = MsgBox("Do you want to clear the MBS sheet?", vbYesNo)
+'    If Answer1 = vbYes Then
+'    On Error GoTo Errhandler3
+'        wbMBS.Sheets(1).Range("B14:J23").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbMBS.Sheets(1).Range("B28:J37").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbMBS.Sheets(1).Range("B42:J56").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbMBS.Sheets(1).Range("B61:J72").SpecialCells(xlCellTypeConstants).ClearContents
+'    End If
+    
+iLastrow1 = ws.Cells(ws.rows.Count, 1).End(xlUp).Row
+iLastrow2 = ws.Cells(ws.rows.Count, 6).End(xlUp).Row
+iLastrow3 = ws.Cells(ws.rows.Count, 13).End(xlUp).Row
+iLastrow4 = ws.Cells(ws.rows.Count, 18).End(xlUp).Row
+
+For i = 3 To iLastrow1
+    If Left(ws.Cells(i, 4), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 1), Cells(i, 3)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(23, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 1))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+
+For i = 3 To iLastrow2
+    If Left(ws.Cells(i, 9), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 6), Cells(i, 8)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(37, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 6))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+
+For i = 3 To iLastrow3
+    If Left(ws.Cells(i, 16), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 13), Cells(i, 15)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(56, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 13))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+
+For i = 3 To iLastrow4
+    If Left(ws.Cells(i, 21), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 18), Cells(i, 20)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(72, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 18))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+wbMBS.Activate
+
+Exit Sub
+
+Errhandler3:
+If Err.Description Like "*No cells*" Then
+Resume Next
+Else
+MsgBox Err.Description
+End If
+
+End Sub
+
+Sub SecurMovementSameDCollat()
+Dim wb As Workbook
+Dim wbMBS, wbCollat As Workbook
+Dim ws As Worksheet
+Dim iAgree As Long
+
+sFile = Inbound.Range("AW15").Value
+sFile = sFile + "\BMO_Collateral.xls"
+Set wbCollat = Workbooks.Open(sFile)
+Set ws = ThisWorkbook.Sheets("USD <SD>")
+
+' Answer1 = MsgBox("Do you want to clear the collateral sheet?", vbYesNo)
+'     If Answer1 = vbYes Then
+'     On Error GoTo Errhandler3
+'        wbCollat.Sheets(2).Range("A2:B15").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("F13:I84").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("B89:D129").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("B133:D149").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("B153:D170").SpecialCells(xlCellTypeConstants).ClearContents
+'    End If
+
+
+'Add securities to Collateral sheet same day
+
+Set wsCollat = wbCollat.Sheets(1)
+'or set as active worksheet
+iLastrow1 = ws.Cells(ws.rows.Count, 1).End(xlUp).Row
+iLastrow2 = ws.Cells(ws.rows.Count, 6).End(xlUp).Row
+iLastrow3 = ws.Cells(ws.rows.Count, 13).End(xlUp).Row
+iLastrow4 = ws.Cells(ws.rows.Count, 18).End(xlUp).Row
+
+'For i = 3 To iLastrow1
+'    If Left(ws.Cells(i, 4), 1) <> "3" Then
+'    ws.Activate
+'    ws.Cells(i, 1).Copy
+'    iLastrow = wbCollat.Sheets(2).Cells(15, 1).End(xlUp).Row
+'    wbCollat.Sheets(2).Cells(iLastrow + 1, 1).PasteSpecial xlValues
+'     iAgree = InputBox("Please Enter the agreed Amount for " & ws.Cells(i, 1) & " (in MM)") * 1000000
+'    wbCollat.Sheets(2).Cells(iLastrow + 1, 2).Value = iAgree / 1000000
+'    End If
+'Next
+
+For i = 3 To iLastrow2
+    If Left(ws.Cells(i, 9), 1) <> "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 6), Cells(i, 8)).Copy
+    iLastrow = wbCollat.Sheets(1).Cells(129, 2).End(xlUp).Row
+    wbCollat.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    End If
+Next
+
+For i = 3 To iLastrow3
+    If Left(ws.Cells(i, 16), 1) <> "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 13), Cells(i, 15)).Copy
+    iLastrow = wbCollat.Sheets(1).Cells(149, 2).End(xlUp).Row
+    wbCollat.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    End If
+Next
+
+For i = 3 To iLastrow4
+    If Left(ws.Cells(i, 21), 1) <> "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 18), Cells(i, 20)).Copy
+    iLastrow = wbCollat.Sheets(1).Cells(170, 2).End(xlUp).Row
+    wbCollat.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    End If
+Next
+wbCollat.Activate
+
+Exit Sub
+
+Errhandler3:
+If Err.Description Like "*No cells*" Then
+Resume Next
+Else
+MsgBox Err.Description
+End If
+
+End Sub
+
+Sub SecurMovementNextDMBS()
+Dim wb As Workbook
+Dim wbMBS, wbCollat As Workbook
+Dim ws, ws1, ws2, ws3 As Worksheet
+Dim iAlloc As Long
+
+
+'Need to set to Identify MBS or Other Securities
+'paths change as flexible since need to take into account for path update
+
+
+'sFile = "C:\Users\fliu10\Desktop\BMO_Collateral MBS.xls"
+
+sFile = Inbound.Range("AW15").Value
+sFile = sFile + "\BMO_Collateral MBS.xls"
+
+Set wbMBS = Workbooks.Open(sFile)
+Set ws = ThisWorkbook.Sheets("USD")
+
+
+'Answer1 = MsgBox("Do you want to clear the MBS sheet?", vbYesNo)
+'    If Answer1 = vbYes Then
+'
+'        On Error GoTo Errhandler3
+'        wbMBS.Sheets(1).Range("B14:J23").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbMBS.Sheets(1).Range("B28:J37").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbMBS.Sheets(1).Range("B42:J56").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbMBS.Sheets(1).Range("B61:J72").SpecialCells(xlCellTypeConstants).ClearContents
+'    End If
+    
+iLastrow1 = ws.Cells(ws.rows.Count, 1).End(xlUp).Row
+iLastrow2 = ws.Cells(ws.rows.Count, 6).End(xlUp).Row
+iLastrow3 = ws.Cells(ws.rows.Count, 13).End(xlUp).Row
+iLastrow4 = ws.Cells(ws.rows.Count, 18).End(xlUp).Row
+
+For i = 3 To iLastrow1
+    If Left(ws.Cells(i, 4), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 1), Cells(i, 3)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(23, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 1))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+
+For i = 3 To iLastrow2
+    If Left(ws.Cells(i, 9), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 6), Cells(i, 8)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(37, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 6))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+
+For i = 3 To iLastrow3
+    If Left(ws.Cells(i, 16), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 13), Cells(i, 15)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(56, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 13))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+
+For i = 3 To iLastrow4
+    If Left(ws.Cells(i, 21), 1) = "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 18), Cells(i, 20)).Copy
+    iLastrow = wbMBS.Sheets(1).Cells(72, 2).End(xlUp).Row
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    iAlloc = InputBox("Please Enter the Allocated Amount for " & ws.Cells(i, 18))
+    wbMBS.Sheets(1).Cells(iLastrow + 1, 10).Value = iAlloc
+    End If
+Next
+wbMBS.Activate
+Exit Sub
+
+Errhandler3:
+If Err.Description Like "*No cells*" Then
+Resume Next
+Else
+MsgBox Err.Description
+End If
+
+
+End Sub
+
+Sub SecurMovementNextDCollat()
+Dim wb As Workbook
+Dim wbMBS, wbCollat As Workbook
+Dim ws As Worksheet
+Dim iAgree As Long
+
+sFile = Inbound.Range("AW15").Value
+sFile = sFile + "\BMO_Collateral.xls"
+Set wbCollat = Workbooks.Open(sFile)
+Set ws = ThisWorkbook.Sheets("USD")
+
+' Answer1 = MsgBox("Do you want to clear the collateral sheet?", vbYesNo)
+'     If Answer1 = vbYes Then
+'     On Error GoTo Errhandler3
+'        wbCollat.Sheets(2).Range("A2:B15").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("F13:I84").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("B89:D129").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("B133:D149").SpecialCells(xlCellTypeConstants).ClearContents
+'        wbCollat.Sheets(1).Range("B153:D170").SpecialCells(xlCellTypeConstants).ClearContents
+'    End If
+
+
+'Add securities to Collateral sheet same day
+
+Set wsCollat = wbCollat.Sheets(1)
+'or set as active worksheet
+iLastrow1 = ws.Cells(ws.rows.Count, 1).End(xlUp).Row
+iLastrow2 = ws.Cells(ws.rows.Count, 6).End(xlUp).Row
+iLastrow3 = ws.Cells(ws.rows.Count, 13).End(xlUp).Row
+iLastrow4 = ws.Cells(ws.rows.Count, 18).End(xlUp).Row
+
+'For i = 3 To iLastrow1
+'    If Left(ws.Cells(i, 4), 1) <> "3" Then
+'    ws.Activate
+'    ws.Cells(i, 1).Copy
+'    iLastrow = wbCollat.Sheets(2).Cells(15, 1).End(xlUp).Row
+'    wbCollat.Sheets(2).Cells(iLastrow + 1, 1).PasteSpecial xlValues
+'     iAgree = InputBox("Please Enter the agreed Amount for " & ws.Cells(i, 1) & " (in MM)") * 1000000
+'    wbCollat.Sheets(2).Cells(iLastrow + 1, 2).Value = iAgree / 1000000
+'
+'    End If
+'Next
+
+For i = 3 To iLastrow2
+    If Left(ws.Cells(i, 9), 1) <> "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 6), Cells(i, 8)).Copy
+    iLastrow = wbCollat.Sheets(1).Cells(129, 2).End(xlUp).Row
+    wbCollat.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    End If
+Next
+
+For i = 3 To iLastrow3
+    If Left(ws.Cells(i, 16), 1) <> "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 13), Cells(i, 15)).Copy
+    iLastrow = wbCollat.Sheets(1).Cells(149, 2).End(xlUp).Row
+    wbCollat.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    End If
+Next
+
+For i = 3 To iLastrow4
+    If Left(ws.Cells(i, 21), 1) <> "3" Then
+    ws.Activate
+    ws.Range(Cells(i, 18), Cells(i, 20)).Copy
+    iLastrow = wbCollat.Sheets(1).Cells(170, 2).End(xlUp).Row
+    wbCollat.Sheets(1).Cells(iLastrow + 1, 2).PasteSpecial xlValues
+    End If
+Next
+wbCollat.Activate
+Exit Sub
+
+Errhandler3:
+If Err.Description Like "*No cells*" Then
+Resume Next
+Else
+MsgBox Err.Description
+End If
+End Sub
+
+Sub harcusSameDay()
+
+Dim strFilePath As String
+Dim wb, wbSafeKeep As Workbook
+Dim ws As Worksheet
+Dim i, j As Long
+Dim RngHK As Range
+Dim Rng As Range
+Dim RngNext, Rng1 As Range
+
+
+Set ws = ThisWorkbook.Sheets("Harcus")
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+strFilePath = Inbound.Range("AW12").Value
+
+'strFilePath = "C:\Users\fliu10\Desktop\Safekeeping Upload.xls"
+Set wbSafeKeep = Workbooks.Open(strFilePath)
+
+'Answer = MsgBox("Clear Safekeeping Upload.xls?", vbYesNo)
+
+On Error GoTo Errhandler3
+'If Answer = vbYes Then
+'wbSafeKeep.Sheets(1).Range("B7:C56").SpecialCells(xlCellTypeConstants).ClearContents
+'wbSafeKeep.Sheets(1).Range("G7:H56").SpecialCells(xlCellTypeConstants).ClearContents
+'End If
+
+If ws.Cells(3, 4) <> "" Then
+Set Rng = ws.Range(ws.Cells(3, 4), ws.Cells(3, 4).End(xlDown))
+Else
+  Exit Sub
+End If
+
+For Each c In Rng
+    If c = "Turnaround Free Receive From:" Then
+'Copy paste in the top
+        i = 7
+        For i = 7 To 55
+        Set RngHK = wbSafeKeep.Sheets(1).Cells(i, 2).MergeArea
+            If RngHK.Cells(1, 1).Value = "" Then
+            wbSafeKeep.Sheets(1).Cells(i, 3).Value = c
+            
+            On Error GoTo ErrHandler1
+            iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlWhole).Row
+            RngHK.Cells(1, 1).Value = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+'
+            wbSafeKeep.Sheets(1).Cells(i, 7).Value = c.Offset(0, 2)
+            wbSafeKeep.Sheets(1).Cells(i, 8).Value = c.Offset(0, 3)
+            i = 55
+            End If
+        i = i + 1
+        Next
+    End If
+
+If c = "Turnaround Free Delivery To:" Then
+'Copy paste in the bottom
+    i = 55
+    For i = 55 To 7 Step -1
+    Set RngHK = wbSafeKeep.Sheets(1).Cells(i, 2).MergeArea
+        If RngHK.Cells(1, 1).Value = "" Then
+            wbSafeKeep.Sheets(1).Cells(i, 3).Value = c
+            
+            On Error GoTo ErrHandler2
+            iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlWhole).Row
+            RngHK.Cells(1, 1).Value = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+            
+            wbSafeKeep.Sheets(1).Cells(i, 7).Value = c.Offset(0, 2)
+            wbSafeKeep.Sheets(1).Cells(i, 8).Value = c.Offset(0, 3)
+            i = 7
+        End If
+    i = i - 1
+    Next
+    End If
+Next
+
+wbSafeKeep.Activate
+    
+Exit Sub
+'
+'ResetFolder:
+'Range("AW12").ClearContents
+'GoTo FillPath
+ErrHandler1:
+
+iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlPart).Row
+strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+
+Answer = MsgBox("This is a RECEIVE from CounterParty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+
+Do Until Answer = vbYes
+    wbSafeKeep.Sheets(2).Activate
+    wbSafeKeep.Sheets(2).Cells(iRow, 1).Activate
+    iRow = Columns(1).FindNext(After:=ActiveCell).Row
+    strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+    MsgBox strAdaptiv
+    Answer = MsgBox("This is a RECEIVE from CounterParty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+Loop
+
+wbSafeKeep.Sheets(1).Activate
+Resume Next
+
+ErrHandler2:
+
+iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlPart).Row
+strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+
+Answer = MsgBox("This is a Free Delivery To Counterparty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+
+Do Until Answer = vbYes
+    wbSafeKeep.Sheets(2).Activate
+    wbSafeKeep.Sheets(2).Cells(iRow, 1).Activate
+    iRow = Columns(1).FindNext(After:=ActiveCell).Row
+    strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+    Answer = MsgBox("This is a Free Delivery To Counterparty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+Loop
+
+wbSafeKeep.Sheets(1).Activate
+Resume Next
+
+Errhandler3:
+If Err.Description Like "*No cells*" Then
+Resume Next
+Else
+MsgBox Err.Description
+End If
+End Sub
+
+Sub harcusNX()
+Dim strFilePath As String
+Dim wb, wbSafeKeep As Workbook
+Dim ws As Worksheet
+Dim i, j As Long
+Dim RngHK As Range
+Dim Rng As Range
+Dim RngNext, Rng1 As Range
+
+
+Set ws = ThisWorkbook.Sheets("Harcus")
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+strFilePath = Inbound.Range("AW12").Value
+
+'strFilePath = "C:\Users\fliu10\Desktop\Safekeeping Upload.xls"
+Set wbSafeKeep = Workbooks.Open(strFilePath)
+
+'Answer = MsgBox("Clear Safekeeping Upload.xls?", vbYesNo)
+
+On Error GoTo Errhandler3
+
+'If Answer = vbYes Then
+'    wbSafeKeep.Sheets(1).Range("B7:C56").SpecialCells(xlCellTypeConstants).ClearContents
+'    wbSafeKeep.Sheets(1).Range("G7:H56").SpecialCells(xlCellTypeConstants).ClearContents
+'End If
+
+If ws.Cells(3, 14) <> "" Then
+    Set Rng = ws.Range(ws.Cells(3, 14), ws.Cells(3, 14).End(xlDown))
+    Else
+    Exit Sub
+End If
+
+For Each c In Rng
+    If c = "Turnaround Free Receive From:" Then
+'Copy paste in the top
+        i = 7
+        For i = 7 To 55
+        Set RngHK = wbSafeKeep.Sheets(1).Cells(i, 2).MergeArea
+            If RngHK.Cells(1, 1).Value = "" Then
+            wbSafeKeep.Sheets(1).Cells(i, 3).Value = c
+            
+            On Error GoTo ErrHandler1
+            iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlWhole).Row
+            RngHK.Cells(1, 1).Value = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+'
+            wbSafeKeep.Sheets(1).Cells(i, 7).Value = c.Offset(0, 2)
+            wbSafeKeep.Sheets(1).Cells(i, 8).Value = c.Offset(0, 3)
+            i = 55
+            End If
+        i = i + 1
+        Next
+    End If
+
+If c = "Turnaround Free Delivery To:" Then
+'Copy paste in the bottom
+    i = 55
+    For i = 55 To 7 Step -1
+    Set RngHK = wbSafeKeep.Sheets(1).Cells(i, 2).MergeArea
+        If RngHK.Cells(1, 1).Value = "" Then
+            wbSafeKeep.Sheets(1).Cells(i, 3).Value = c
+            
+            On Error GoTo ErrHandler2
+            iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlWhole).Row
+            RngHK.Cells(1, 1).Value = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+            
+            wbSafeKeep.Sheets(1).Cells(i, 7).Value = c.Offset(0, 2)
+            wbSafeKeep.Sheets(1).Cells(i, 8).Value = c.Offset(0, 3)
+            i = 7
+        End If
+    i = i - 1
+    Next
+    End If
+Next
+wbSafeKeep.Activate
+
+    
+Exit Sub
+
+ErrHandler1:
+
+iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlPart).Row
+strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+
+Answer = MsgBox("This is a RECEIVE from CounterParty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+
+Do Until Answer = vbYes
+    wbSafeKeep.Sheets(2).Activate
+    wbSafeKeep.Sheets(2).Cells(iRow, 1).Activate
+    iRow = Columns(1).FindNext(After:=ActiveCell).Row
+    strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+    MsgBox strAdaptiv
+    Answer = MsgBox("This is a RECEIVE from CounterParty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+Loop
+wbSafeKeep.Sheets(1).Activate
+
+Resume Next
+
+ErrHandler2:
+
+iRow = wbSafeKeep.Sheets(2).Columns(1).Find(what:=c.Offset(0, -1), lookat:=xlPart).Row
+strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+
+Answer = MsgBox("This is a Free Delivery To Counterparty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+
+Do Until Answer = vbYes
+
+    wbSafeKeep.Sheets(2).Activate
+    wbSafeKeep.Sheets(2).Cells(iRow, 1).Activate
+    iRow = Columns(1).FindNext(After:=ActiveCell).Row
+    strAdaptiv = wbSafeKeep.Sheets(2).Cells(iRow, 1)
+    Answer = MsgBox("This is a Free Delivery To Counterparty. Is " & strAdaptiv & " the right Adaptive Code to use?", vbYesNo)
+Loop
+
+wbSafeKeep.Sheets(1).Activate
+Resume Next
+
+Errhandler3:
+If Err.Description Like "*No cells*" Then
+Resume Next
+Else
+MsgBox Err.Description
+End If
+
+End Sub
