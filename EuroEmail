@@ -1,0 +1,459 @@
+Public KillApp As Boolean
+Sub EuroMovement()
+Dim WorkWb As Workbook
+Dim EuroWb As Workbook
+Dim Adaptiv As Range
+Dim Amount As Double
+Dim ws As Worksheet
+Dim wsName As String
+Dim FirstSpace As Integer
+Dim FoundAdaptiv As Boolean
+Dim AdaptivName As String
+Dim CuCcy As String
+
+Application.ScreenUpdating = False
+
+AdaptivName = InputBox("Input Adaptiv")
+
+
+Set WorkWb = ThisWorkbook
+
+
+On Error GoTo WrongCell
+
+Set Adaptiv = Outbound.Range("C:C").Find(what:=AdaptivName, MatchCase:=False, lookat:=xlWhole)
+
+If Adaptiv Is Nothing Then
+Set Adaptiv = Inbound.Range("C:C").Find(what:=AdaptivName, MatchCase:=False, lookat:=xlWhole)
+End If
+
+
+Amount = Adaptiv.Offset(0, 4).Value
+CuCcy = UCase(Adaptiv.Offset(0, 3).Value)
+If Amount = 0 Then
+    MsgBox "Amount = $0"
+    Exit Sub
+End If
+
+If CuCcy = "" Then
+    MsgBox "Invalid Currency"
+    Exit Sub
+End If
+
+On Error GoTo 0
+
+
+
+ReDoIt:
+On Error GoTo CreateFileDesitnation
+Set EuroWb = Workbooks.Open(Inbound.Range("AW13").Value)
+On Error GoTo 0
+
+EuroWb.Activate
+EuroWb.Sheets(1).Activate
+
+If Adaptiv.Offset(0, 1).Value = "Inbound" Then
+Range("A8").Value = "BMO TO RECEIVE"
+Else: Range("A8").Value = "BMO TO DELIVER"
+End If
+
+Range("B8").Value = UCase(Adaptiv.Value)
+Range("E8").Value = Amount
+Range("D8").Value = CuCcy
+
+If Adaptiv.Offset(0, 5).Value = "Today" Then
+Range("F8").Value = "=Today()"
+Else: Range("F8").Value = "=Today()+1"
+End If
+
+
+
+Application.Run ("'BMO LONDON - NOTICE OF COLLATERAL MOVEMENT(S) -(NEW - Send Email).xlsm'!Mail_Fixed")
+
+Application.DisplayAlerts = False
+EuroWb.Close
+Application.DisplayAlerts = True
+
+Application.ScreenUpdating = True
+
+
+Exit Sub
+CreateFileDesitnation:
+    Call OpenFile
+    If KillApp = True Then Exit Sub
+    GoTo ReDoIt
+Exit Sub
+WrongCell:
+    MsgBox "Please Input a Valid Adaptiv Code"
+End Sub
+
+Sub OpenFile()
+
+Dim fd As FileDialog
+Dim ActionClicked As Boolean
+Dim Response As Integer
+
+    KillApp = False
+    Set fd = Application.FileDialog(msoFileDialogOpen)
+    fd.AllowMultiSelect = False
+    
+    ActionClicked = fd.Show
+    
+    If ActionClicked Then
+        Inbound.Range("AW13").Value = fd.SelectedItems(1)
+        Inbound.Range("AV13").Value = "EUR File Directory"
+    Else:
+        MsgBox "You didn't select a folder", vbExclamation
+        KillApp = True
+        Exit Sub
+    End If
+    
+    Application.AskToUpdateLinks = True
+
+End Sub
+
+
+
+Sub CreateEuroSummaryData()
+Dim r As Range
+Dim RowCount As Long
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+RowCount = Inbound.Cells.rows.Count
+
+Inbound.Activate
+Call ValidateData
+Outbound.Activate
+Call ValidateData
+
+EuroMovm.rows("4:1000").Clear
+
+
+For Each r In Range(Inbound.Range("C13"), Inbound.Range("C" & RowCount).End(xlUp))
+    If (r.Offset(0, 3) = "EUR" Or r.Offset(0, 3) = "JPY" Or r.Offset(0, 3) = "GBP") _
+        And UCase(r.Offset(0, 5)) = "TODAY" Then
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(1, 0) = r.Value
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 1) = Application.WorksheetFunction.VLookup(r, AdaptivCodes.Columns("A:B"), 2, False)
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 2) = r.Offset(0, 3).Value
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 3) = r.Offset(0, 4).Value
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 4) = "BMO TO RECEIVE"
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 4).Interior.Color = 13561798
+    End If
+Next r
+
+For Each r In Range(Outbound.Range("C13"), Outbound.Range("C" & RowCount).End(xlUp))
+    If (r.Offset(0, 3) = "EUR" Or r.Offset(0, 3) = "JPY" Or r.Offset(0, 3) = "GBP") _
+        And UCase(r.Offset(0, 5)) = "TODAY" Then
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(1, 0) = r.Value
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 1) = Application.WorksheetFunction.VLookup(r, AdaptivCodes.Columns("A:B"), 2, False)
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 2) = r.Offset(0, 3).Value
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 3) = r.Offset(0, 4).Value
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 4) = "BMO TO DELIVER"
+            EuroMovm.Range("C" & RowCount).End(xlUp).Offset(0, 4).Interior.Color = 13551615
+    End If
+Next r
+
+For Each r In Range(Inbound.Range("C13"), Inbound.Range("C" & RowCount).End(xlUp))
+    If (r.Offset(0, 3) = "EUR" Or r.Offset(0, 3) = "JPY" Or r.Offset(0, 3) = "GBP") _
+        And UCase(r.Offset(0, 5)) = "TOMORROW" Then
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(1, 0) = r.Value
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 1) = Application.WorksheetFunction.VLookup(r, AdaptivCodes.Columns("A:B"), 2, False)
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 2) = r.Offset(0, 3).Value
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 3) = r.Offset(0, 4).Value
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 4) = "BMO TO RECEIVE"
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 4).Interior.Color = 13561798
+    End If
+Next r
+
+For Each r In Range(Outbound.Range("C13"), Outbound.Range("C" & RowCount).End(xlUp))
+    If (r.Offset(0, 3) = "EUR" Or r.Offset(0, 3) = "JPY" Or r.Offset(0, 3) = "GBP") _
+        And UCase(r.Offset(0, 5)) = "TOMORROW" Then
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(1, 0) = r.Value
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 1) = Application.WorksheetFunction.VLookup(r, AdaptivCodes.Columns("A:B"), 2, False)
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 2) = r.Offset(0, 3).Value
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 3) = r.Offset(0, 4).Value
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 4) = "BMO TO DELIVER"
+            EuroMovm.Range("J" & RowCount).End(xlUp).Offset(0, 4).Interior.Color = 13551615
+    End If
+Next r
+
+
+
+EuroMovm.Activate
+
+Columns("F:F").NumberFormat = "#,##"
+Columns("M:M").NumberFormat = "#,##"
+Columns("D:D").AutoFit
+Columns("K:K").AutoFit
+
+Range("C2", Range("G" & RowCount).End(xlUp)).Borders.LineStyle = xlContinuous
+Range("J2", Range("N" & RowCount).End(xlUp)).Borders.LineStyle = xlContinuous
+
+Columns("C:N").HorizontalAlignment = xlCenter
+
+
+End Sub
+
+Sub EmailSameDayEURO()
+'For Tips see: http://www.rondebruin.nl/win/winmail/Outlook/tips.htm
+'Don't forget to copy the function RangetoHTML in the module.
+'Working in Excel 2000-2016
+    Dim Rng As Range
+    Dim OutApp As Object
+    Dim OutMail As Object
+'from second macro
+    Dim rngTo As Range
+    Dim rngCC As Range
+    Dim rngSubject As Range
+    Dim rngBody As Range
+    Dim body_1st, body_2nd, body_3rd, body_4th As String
+    Dim StrBody As String
+    Dim StrEndBody As String
+    
+    
+ 'for dynamic row range selection
+ Dim rows As Integer
+ Dim rngrows As Range
+ Dim rowstwice As Integer
+    
+    Set Rng = Nothing
+    On Error Resume Next
+    
+   
+    'Only the visible cells in the selection
+    
+    Set Rng = Range(EuroMovm.Range("C2"), EuroMovm.Range("G" & Cells.rows.Count).End(xlUp))
+    
+    With Application
+        .EnableEvents = False
+        .ScreenUpdating = False
+    End With
+
+    Set OutApp = CreateObject("Outlook.Application")
+    Set OutMail = OutApp.CreateItem(0)
+
+    On Error Resume Next
+    
+    With EuroMovm
+    Set rngTo = .Range("R1")
+    Set rngCC = .Range("R2")
+
+        
+End With
+
+
+StrBody = "Hello," & "<br>" & "<br>" & "Please see below for same day collateral movements:" & "<br>"
+
+StrEndBody = "<br>" & "<br>" & _
+"OTC Collateral Desk | Collateral Management Group | Global Middle Office" & "<br>" & _
+"BMO Capital Markets | 100 King St. West | 17th Floor | Toronto, ON M5X 1H3" & "<br>" & _
+"Collateral@BMO.com"
+
+
+    With OutMail
+        .SentOnBehalfOfName = """Collateral Management"" <Collateral@bmo.com>"
+        .To = rngTo.Value
+        .CC = rngCC.Value
+        .Subject = "CMG: Same Day Collateral Movements for " & EuroMovm.Range("C2").Value
+        .HTMLBody = StrBody & RangetoHTML(Rng) & StrEndBody
+        .Signature
+        .Display
+    End With
+    On Error GoTo 0
+
+    With Application
+        .EnableEvents = True
+        .ScreenUpdating = True
+    End With
+
+    Set OutMail = Nothing
+    Set OutApp = Nothing
+     Set rngTo = Nothing
+    Set rngSubject = Nothing
+    Set rngBody = Nothing
+
+
+
+'Check if outlook is not running or not installed
+    On Error Resume Next
+    Set outlookApp = GetObject(, "Outlook.Application")
+    If Err.Number = 429 Then 'Outlook is NOT running
+        Err.Clear
+        Set outlookApp = CreateObject("Outlook.Application") 'Start Outlook
+        If Err.Number = 429 Then 'MS Outlook is not installed
+            MsgBox "MS Outlook is not installed on your computer. ", vbOKOnly + vbCritical
+            Exit Sub
+        End If
+    End If
+
+
+
+
+End Sub
+
+
+Sub EmailNextDayEURO()
+'For Tips see: http://www.rondebruin.nl/win/winmail/Outlook/tips.htm
+'Don't forget to copy the function RangetoHTML in the module.
+'Working in Excel 2000-2016
+    Dim Rng As Range
+    Dim OutApp As Object
+    Dim OutMail As Object
+'from second macro
+    Dim rngTo As Range
+    Dim rngCC As Range
+    Dim rngSubject As Range
+    Dim rngBody As Range
+    Dim body_1st, body_2nd, body_3rd, body_4th As String
+    Dim StrBody As String
+    Dim StrEndBody As String
+    
+    
+ 'for dynamic row range selection
+ Dim rows As Integer
+ Dim rngrows As Range
+ Dim rowstwice As Integer
+    
+    Set Rng = Nothing
+    On Error Resume Next
+    
+   
+    'Only the visible cells in the selection
+    
+    Set Rng = Range(EuroMovm.Range("J2"), EuroMovm.Range("N" & Cells.rows.Count).End(xlUp))
+    
+    With Application
+        .EnableEvents = False
+        .ScreenUpdating = False
+    End With
+
+    Set OutApp = CreateObject("Outlook.Application")
+    Set OutMail = OutApp.CreateItem(0)
+
+    On Error Resume Next
+    
+    With EuroMovm
+    Set rngTo = .Range("R1")
+    Set rngCC = .Range("R2")
+
+        
+End With
+
+
+StrBody = "Hello," & "<br>" & "<br>" & "Please see below for next day collateral movements:" & "<br>"
+
+StrEndBody = "<br>" & "<br>" & _
+"OTC Collateral Desk | Collateral Management Group | Global Middle Office" & "<br>" & _
+"BMO Capital Markets | 100 King St. West | 17th Floor | Toronto, ON M5X 1H3" & "<br>" & _
+"Collateral@BMO.com"
+
+
+    With OutMail
+        .SentOnBehalfOfName = """Collateral Management"" <Collateral@bmo.com>"
+        .To = rngTo.Value
+        .CC = rngCC.Value
+        .Subject = "CMG: Next Day Collateral Movements for " & EuroMovm.Range("J2").Value
+        .HTMLBody = StrBody & RangetoHTML(Rng) & StrEndBody
+        .Signature
+        .Display
+    End With
+    On Error GoTo 0
+
+    With Application
+        .EnableEvents = True
+        .ScreenUpdating = True
+    End With
+
+    Set OutMail = Nothing
+    Set OutApp = Nothing
+     Set rngTo = Nothing
+    Set rngSubject = Nothing
+    Set rngBody = Nothing
+
+
+
+'Check if outlook is not running or not installed
+    On Error Resume Next
+    Set outlookApp = GetObject(, "Outlook.Application")
+    If Err.Number = 429 Then 'Outlook is NOT running
+        Err.Clear
+        Set outlookApp = CreateObject("Outlook.Application") 'Start Outlook
+        If Err.Number = 429 Then 'MS Outlook is not installed
+            MsgBox "MS Outlook is not installed on your computer. ", vbOKOnly + vbCritical
+            Exit Sub
+        End If
+    End If
+
+
+
+
+End Sub
+
+
+Function RangetoHTML(Rng As Range)
+' Changed by Ron de Bruin 28-Oct-2006
+' Working in Office 2000-2016
+    Dim fso As Object
+    Dim ts As Object
+    Dim TempFile As String
+    Dim TempWB As Workbook
+
+    TempFile = Environ$("temp") & "\" & Format(Now, "dd-mm-yy h-mm-ss") & ".htm"
+
+    'Copy the range and create a new workbook to past the data in
+    Rng.Copy
+    Set TempWB = Workbooks.Add(1)
+    With TempWB.Sheets(1)
+        .Cells(1).PasteSpecial Paste:=8
+        .Cells(1).PasteSpecial xlPasteValues, , False, False
+        .Cells(1).PasteSpecial xlPasteFormats, , False, False
+        .Cells(1).Select
+        Application.CutCopyMode = False
+        On Error Resume Next
+        .DrawingObjects.Visible = True
+        .DrawingObjects.Delete
+        On Error GoTo 0
+    End With
+
+    'Publish the sheet to a htm file
+    With TempWB.PublishObjects.Add( _
+         SourceType:=xlSourceRange, _
+         FileName:=TempFile, _
+         Sheet:=TempWB.Sheets(1).Name, _
+         Source:=TempWB.Sheets(1).UsedRange.Address, _
+         HtmlType:=xlHtmlStatic)
+        .Publish (True)
+    End With
+
+    'Read all data from the htm file into RangetoHTML
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set ts = fso.GetFile(TempFile).OpenAsTextStream(1, -2)
+    RangetoHTML = ts.ReadAll
+    ts.Close
+    RangetoHTML = Replace(RangetoHTML, "align=center x:publishsource=", _
+                          "align=left x:publishsource=")
+
+    'Close TempWB
+    TempWB.Close savechanges:=False
+
+    'Delete the htm file we used in this function
+    Kill TempFile
+
+    Set ts = Nothing
+    Set fso = Nothing
+    Set TempWB = Nothing
+End Function
+
+
+
+
+
+
+
+
+
+
+
+
