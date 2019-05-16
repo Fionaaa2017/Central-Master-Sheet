@@ -1,0 +1,90 @@
+Sub LookUPAdaptive()
+
+Dim wb As Workbook
+Dim wsAdaptive, wsInBound, ws As Worksheets
+Dim strCounterpary, strAdaptiv, strAdaptive As String
+Dim iLastrow, iRow As Long
+Set wb = ThisWorkbook
+Set wsAdaptive = wb.Sheets("Adaptiv")
+Set wsInBound = wb.Sheets("InBound")
+strCounterparty = InputBox("Please input name of Counterparty")
+
+Dim wsAct As Worksheet
+
+Set wsAct = ActiveSheet
+
+AdaptivCodes.Visible = xlSheetVisible
+wsAdaptive.Activate
+
+On Error GoTo Errorhandler
+iRow = wsAdaptive.Columns(2).Find(what:=strCounterparty, lookat:=xlPart).Row
+
+strAdaptiv = wsAdaptive.Cells(iRow, 1).Value
+Cells(iRow, 2).Activate
+wsAdaptive.Cells(iRow, 1).Copy
+MsgBox strAdaptiv
+
+Answer = MsgBox("Is this the right Adaptive Code?", vbYesNo)
+
+'Find next cell that have similar name
+
+Do Until Answer = vbYes
+Cells(iRow, 2).Activate
+iRow = Cells.FindNext(After:=ActiveCell).Row
+Cells(iRow, 2).Activate
+strAdaptiv = Cells(iRow, 1)
+MsgBox strAdaptiv
+Answer = MsgBox("Is this the right Adaptive Code?", vbYesNo)
+wsAdaptive.Cells(iRow, 1).Copy
+Loop
+
+wsInBound.Activate
+
+AdaptivCodes.Visible = xlSheetHidden
+wsAct.Activate
+
+
+Exit Sub
+Errorhandler:
+MsgBox " No found"
+wsInBound.Activate
+AdaptivCodes.Visible = xlSheetHidden
+End Sub
+
+Sub lookupCounterpary()
+
+Dim wb As Workbook
+Dim wsAdaptive, wsInBound, ws As Worksheets
+Dim strCounterpary, strAdaptiv, strAdaptive As String
+Dim iLastrow As Long
+Set wb = ThisWorkbook
+Set wsAdaptive = wb.Sheets("Adaptiv")
+Set wsInBound = wb.Sheets("InBound")
+
+Dim wsAct As Worksheet
+
+Set wsAct = ActiveSheet
+
+strCounterparty = InputBox("Please input name of Counterparty")
+
+
+AdaptivCodes.Visible = xlSheetVisible
+wsAdaptive.Activate
+
+
+iRow = wsAdaptive.Columns(1).Find(what:=strCounterparty, lookat:=xlPart).Row
+
+strAdaptiv = wsAdaptive.Cells(iRow, 2).Value
+
+wsAdaptive.Cells(iRow, 2).Copy
+
+'iLastrow = wsInBound.Cells(53, 3).End(xlUp).rows
+'wsInBound.Cells(iLastrow + 1, 3).Paste
+
+MsgBox strAdaptiv
+wsInBound.Activate
+'wsAdaptive.Hide
+
+AdaptivCodes.Visible = xlSheetHidden
+wsAct.Activate
+End Sub
