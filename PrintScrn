@@ -1,0 +1,25 @@
+Sub PrintScrnActivate()
+Dim ws As Worksheet
+Dim shape As Excel.shape
+
+Application.ScreenUpdating = False
+Set ws = ActiveSheet
+With PrScrn
+.Visible = xlSheetVisible
+.Activate
+
+For Each shape In ActiveSheet.Shapes
+    shape.Delete
+Next shape
+.Pictures.Paste.Select
+.PageSetup.FitToPagesWide = 1
+.PageSetup.FitToPagesTall = 1
+.PageSetup.Orientation = xlLandscape
+.PrintOut Preview:=False, IgnorePrintAreas:=True
+.Visible = xlSheetHidden
+End With
+
+ws.Activate
+
+Application.ScreenUpdating = True
+End Sub
