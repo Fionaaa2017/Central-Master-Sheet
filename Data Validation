@@ -1,0 +1,440 @@
+Sub ValidateData()
+
+Dim mCalls As Range
+Dim r As Range
+
+Set mCalls = Range("C13", Range("C12").End(xlDown))
+
+If Range("C13") = "" Then
+    Exit Sub
+End If
+
+
+For Each r In mCalls
+    r.Value = UCase(r.Value)
+    r.Offset(0, 3).Value = UCase(r.Offset(0, 3).Value)
+    r.Offset(0, 10).Value = UCase(r.Offset(0, 10).Value)
+
+    If IsNumeric(Left(r.Offset(0, 3), 1)) Then
+        If Len(r.Offset(0, 3)) <> 9 Then
+            MsgBox "The security " & r.Offset(0, 3) & " is NOT equal to 9 Characters. Please Correct!", vbExclamation
+            r.Offset(0, 3).Select
+         End If
+    End If
+    
+    If Len(r.Offset(0, 3)) = 3 Then
+
+        If Not (r.Offset(0, 3) = "USD" Or r.Offset(0, 3) = "EUR" Or r.Offset(0, 3) = "CAD" Or r.Offset(0, 3) = "JPY" Or r.Offset(0, 3) = "GBP" Or r.Offset(0, 3) = "CHF") Then
+            MsgBox UCase(r.Offset(0, 3)) & " is an Invalid Currency. Please Correct", vbExclamation
+            r.Offset(0, 3).Select
+        End If
+    End If
+    'check if Contract Type is entered"
+    If r.Offset(0, 7) = "" Then
+    MsgBox "Contract Type is empty,Please select correct contract"
+    r.Offset(0, 7).Activate
+    End If
+Next r
+
+Call TrimData
+Call ValidateAdaptiv
+Call FixNumbers
+Call ValidateLGYREGVM
+Call UpperCase
+
+End Sub
+
+Sub FixNumbers()
+
+Dim Calls As Range
+Dim r As Range
+
+Set Calls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In Calls
+    If LCase(Right(r.Offset(0, 4), 1)) = "k" Then
+       r.Offset(0, 4) = Left(r.Offset(0, 4), Len(r.Offset(0, 4)) - 1) * 1000
+    ElseIf LCase(Right(r.Offset(0, 4), 1)) = "m" Then
+       r.Offset(0, 4) = Left(r.Offset(0, 4), Len(r.Offset(0, 4)) - 1) * 1000000
+    End If
+    
+    If IsNumeric(Left(r.Offset(0, 4), 1)) = False And Len(r.Offset(0, 4).Value) > 0 Then
+        MsgBox "The Nominal Value For " & UCase(r.Value) & " Is Not Valid", vbExclamation
+        r.Offset(0, 4).Select
+    End If
+    
+    If LCase(Right(r.Offset(0, 8), 1)) = "k" Then
+       r.Offset(0, 8) = Left(r.Offset(0, 8), Len(r.Offset(0, 8)) - 1) * 1000
+    ElseIf LCase(Right(r.Offset(0, 8), 1)) = "m" Then
+       r.Offset(0, 8) = Left(r.Offset(0, 8), Len(r.Offset(0, 8)) - 1) * 1000000
+    End If
+    
+    If (IsNumeric(Left(r.Offset(0, 8), 1)) = False) And Len(r.Offset(0, 8).Value) > 0 Then
+        MsgBox "The Call Amount For " & UCase(r.Value) & " Is Not Valid", vbExclamation
+        r.Offset(0, 8).Select
+    End If
+    
+    If LCase(Left(r.Offset(0, 3), 1)) = "s" And _
+        UCase(Right(r.Offset(0, 3), 3)) = "CAD" Then
+            r.Offset(0, 3).Value = "PLEDGE CAD"
+    End If
+     
+    If LCase(Left(r.Offset(0, 3), 1)) = "p" And _
+        UCase(Right(r.Offset(0, 3), 3)) = "CAD" Then
+            r.Offset(0, 3).Value = "PLEDGE CAD"
+    End If
+    
+    If LCase(Left(r.Offset(0, 3), 1)) = "s" And _
+        UCase(Right(r.Offset(0, 3), 3)) <> "CAD" Then
+            r.Offset(0, 3).Value = "PLEDGE"
+    End If
+    
+    If LCase(Left(r.Offset(0, 3), 1)) = "p" And _
+        UCase(Right(r.Offset(0, 3), 3)) <> "CAD" Then
+            r.Offset(0, 3).Value = "PLEDGE"
+    End If
+Next r
+
+End Sub
+
+Sub ValidateLGYREGVM()
+
+Dim Adaptiv As Range
+Dim Ctpy As Range
+Dim mCalls As Range
+Dim LGYList As Range
+
+Set LGYList = LRVM.Range("A1", LRVM.Range("A1").End(xlDown))
+Set mCalls = Range("C13", Range("C12").End(xlDown))
+
+For Each Adaptiv In mCalls
+    For Each Ctpy In LGYList
+        If Adaptiv = Ctpy And Adaptiv.Offset(0, 11).Value = "" Then
+            MsgBox Adaptiv.Value & " is split into LGY/REG VM. Makes sure to fill in the column.", vbExclamation
+            Adaptiv.Offset(0, 11).Select
+        End If
+    Next Ctpy
+Next Adaptiv
+
+End Sub
+
+Sub ValidateAdaptiv()
+
+Dim Codes As Range
+Dim mCCalls As Range
+Dim r As Range
+Dim cell As Range
+Dim k As Integer
+
+Set mCCalls = Range("C13", Range("C12").End(xlDown))
+Set Codes = AdaptivCodes.Range("A1", AdaptivCodes.Range("A1").End(xlDown))
+
+k = 0
+
+For Each r In mCCalls
+k = 0
+    For Each cell In Codes
+      If UCase(r.Value) = UCase(cell.Value) Then
+        k = 1
+      End If
+     Next cell
+     
+     If k = 0 Then
+        MsgBox "The Adaptive Code " & UCase(r.Value) & " is Invalid!", vbExclamation
+        r.Select
+     End If
+Next r
+
+End Sub
+
+Sub TrimData()
+Dim r As Range
+Dim mCCalls As Range
+
+Set mCCalls = Range("F13", Range("F12").End(xlDown))
+
+For Each r In mCCalls
+    r.Value = Trim(r.Value)
+Next r
+
+Set mCCalls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In mCCalls
+    r.Value = Trim(r.Value)
+Next r
+
+Set mCCalls = Range("G13", Range("G12").End(xlDown))
+
+For Each r In mCCalls
+    r.Value = Trim(r.Value)
+Next r
+
+End Sub
+
+
+'*************************'
+
+'Sub RemoveSpace()
+'
+'Dim Calls As Range
+'Dim r As Range
+'Dim s As String
+'
+'Set Calls = Range("R12", Range("R12").End(xlDown))
+'For Each r In Calls
+'    s = r.Value
+'    Debug.Print Len(s)
+'    s = Left(s, Len(s) - 1)
+'    r.Offset(0, 1).Value = s
+'Next r
+'
+'End Sub
+
+'******************'
+
+
+
+'Sub ValidateDirectionOutbound()
+'
+'Dim List As Range
+'Dim r As Range
+'Dim MyList As String
+'
+'MyList = "Outbound"
+'Set List = Range("D13:D50")
+'
+'For Each r In List
+'    If Not (r.Value = "Outbound") Then
+'        r.Interior.Color = vbRed
+'        With r.Validation
+'            .Delete
+'            .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, _
+'            Operator:=xlBetween, Formula1:=MyList
+'        End With
+'        MsgBox "Only Outbound Margin Calls are allowed on this sheet"
+'        r.Select
+'    End If
+'
+'Next r
+'End Sub
+
+Sub UpperCase()
+
+iLastrow1 = Inbound.Cells(12, 3).End(xlDown).Row
+iLastrow2 = Outbound.Cells(12, 3).End(xlDown).Row
+
+For i = 13 To iLastrow1
+
+Inbound.Cells(i, 3) = UCase(Inbound.Cells(i, 3).Value)
+Inbound.Cells(i, 6) = UCase(Inbound.Cells(i, 6).Value)
+
+Next
+
+For i = 13 To iLastrow1
+
+Outbound.Cells(i, 3) = UCase(Outbound.Cells(i, 3).Value)
+Outbound.Cells(i, 6) = UCase(Outbound.Cells(i, 6).Value)
+Next
+
+End Sub
+
+Public Sub ValidateDirectionOutBound()
+Dim Path As String
+Dim TargetDate As String
+Dim IGlesWb As Workbook
+Dim ReportWb As Workbook
+Dim Position As Range
+Dim Positions As Range
+Dim Entry As Range
+Dim Entries As Range
+Dim ErrorFound As Boolean
+Dim PositionTotal As Double
+Dim strEntryName As String
+
+Application.ScreenUpdating = False
+' First Part of the Macro ----- Bring in the Data
+Application.DisplayAlerts = False
+
+Set wb = ThisWorkbook
+Outbound.Columns("o:o").Interior.Color = vbWhite
+
+If Weekday(Date) = 2 Then
+    TargetDate = VBA.Format(Date - 3, "yyyymmdd")
+Else
+    TargetDate = VBA.Format(Date - 1, "yyyymmdd")
+End If
+
+Path = "\\Cmtowpcalpfil01\BMO_PRD\" & TargetDate & "\Collateral\CMG_Internal_Reports\BMO_Collateral_Position_Summary_Report_" & TargetDate & ".xls"
+
+On Error GoTo FileErrorHandling
+Set ReportWb = Workbooks.Open(Path)
+On Error GoTo 0
+
+
+ReportWb.Activate
+
+Range("A6").CurrentRegion.Copy
+
+wb.Activate
+
+wsPositions.Range("A1").PasteSpecial xlPasteAll
+
+ReportWb.Close
+
+
+' Now Reconcile The Data
+
+Set Entries = Outbound.Range("C13", Outbound.Range("C12").End(xlDown))
+Set Positions = wsPositions.Range("A2", wsPositions.Range("A1").End(xlDown))
+
+
+For Each Entry In Entries
+    strEntryName = Entry.Offset(0, 7)
+    If Entry.Offset(0, 11) = "LGY" Then
+        strEntry = Entry + "LGY"
+    Else: strEntry = Entry
+    End If
+    
+    ErrorFound = False
+    PositionTotal = 0
+        For Each Position In Positions
+            'First If Statement Filters the Positions
+            If (UCase(strEntryName) = UCase(Position.Offset(0, 43).Value)) _
+            And (Position.Offset(0, 2).Value = "CSA" Or Position.Offset(0, 2).Value = "CSA - REG VM") _
+            And (Position.Value = "BANK OF MONTREAL" Or Position.Value = "BMO Ireland, PLC") Then
+            ' Second If Statament Finds the total Position
+                    PositionTotal = PositionTotal + Position.Offset(0, 27).Value
+               
+            End If
+        Next Position
+        
+        'This If statement compares the total position to what is being posted
+        
+                If UCase(Entry.Offset(0, 2).Value) = "RETURN" And PositionTotal < 0 Then
+                        ErrorFound = True
+                ElseIf UCase(Entry.Offset(0, 2).Value) = "DELIVER" And PositionTotal > 0 Then
+                        ErrorFound = True
+                ElseIf UCase(Entry.Offset(0, 2).Value) = "RETURN" And PositionTotal = 0 Then
+                        ErrorFound = True
+                End If
+                
+                
+                If Abs(PositionTotal) < (Entry.Offset(0, 4).Value) _
+                And UCase(Entry.Offset(0, 2).Value) = "RETURN" Then
+                    MsgBox "The return amount for " & Entry.Value & " is incorret. You cannot return more than the existing position. Please adjust.", vbCritical
+                End If
+          
+            If ErrorFound Then
+                Entry.Offset(0, 12).Interior.Color = rgbRed
+                MsgBox "The entry for " & Entry.Value & " seems to be incorrectly posted. Please double check with the collateral balance in Calypso.", vbCritical
+            End If
+Next Entry
+
+Exit Sub
+
+FileErrorHandling:
+    MsgBox "The Report for the previous business day could not be extracted", vbExclamation
+
+End Sub
+
+Public Sub ValidateDirectionInbound()
+Dim Path As String
+Dim TargetDate As String
+Dim wb As Workbook
+Dim ReportWb As Workbook
+Dim Position As Range
+Dim Positions As Range
+Dim Entry As Range
+Dim Entries As Range
+Dim ErrorFound As Boolean
+Dim PositionTotal As Double
+Dim strEntry As String
+Dim strEntryName As String
+
+
+Application.ScreenUpdating = False
+' First Part of the Macro ----- Bring in the Data
+Application.DisplayAlerts = False
+
+Set wb = ThisWorkbook
+
+Inbound.Columns("o:o").Interior.Color = vbWhite
+If Weekday(Date) = 2 Then
+    TargetDate = VBA.Format(Date - 3, "yyyymmdd")
+Else
+    TargetDate = VBA.Format(Date - 1, "yyyymmdd")
+End If
+
+Path = "\\Cmtowpcalpfil01\BMO_PRD\" & TargetDate & "\Collateral\CMG_Internal_Reports\BMO_Collateral_Position_Summary_Report_" & TargetDate & ".xls"
+
+On Error GoTo FileErrorHandling
+Set ReportWb = Workbooks.Open(Path)
+On Error GoTo 0
+
+
+ReportWb.Activate
+
+Range("A6").CurrentRegion.Copy
+
+wb.Activate
+
+wsPositions.Range("A1").PasteSpecial xlPasteAll
+
+ReportWb.Close
+
+
+' Now Reconcile The Data
+
+Set Entries = Inbound.Range("C13", Inbound.Range("C12").End(xlDown))
+Set Positions = wsPositions.Range("A1", wsPositions.Range("A1").End(xlDown))
+
+
+For Each Entry In Entries
+    strEntryName = Entry.Offset(0, 7)
+    If Entry.Offset(0, 11) = "LGY" Then
+        strEntry = Entry + "LGY"
+    Else: strEntry = Entry
+    End If
+    ErrorFound = False
+    PositionTotal = 0
+        For Each Position In Positions
+            'First If Statement Filters the Positions
+            If (UCase(strEntryName) = UCase(Position.Offset(0, 43).Value)) _
+            And (Position.Offset(0, 2).Value = "CSA" Or Position.Offset(0, 2).Value = "CSA - REG VM") _
+            And (Position.Value = "BANK OF MONTREAL" Or Position.Value = "BMO Ireland, PLC") Then
+            ' Second If Statament Finds the total Position
+                    PositionTotal = PositionTotal + Position.Offset(0, 27).Value
+              End If
+        Next Position
+        
+        'This If statement compares the total position to what is being posted
+        
+                If UCase(Entry.Offset(0, 2).Value) = "RETURN" And PositionTotal > 0 Then
+                        ErrorFound = True
+                ElseIf UCase(Entry.Offset(0, 2).Value) = "DELIVER" And PositionTotal < 0 Then
+                        ErrorFound = True
+                ElseIf UCase(Entry.Offset(0, 2).Value) = "RETURN" And PositionTotal = 0 Then
+                        ErrorFound = True
+                End If
+                                
+                If Abs(PositionTotal) < (Entry.Offset(0, 4).Value) _
+                And UCase(Entry.Offset(0, 2).Value) = "RETURN" Then
+                    MsgBox "The return amount for " & Entry.Value & " is incorret. You cannot return more than the existing position. Please adjust.", vbCritical
+                End If
+          
+            If ErrorFound = True Then
+                Entry.Offset(0, 12).Interior.Color = rgbRed
+                MsgBox "The entry for " & Entry.Value & " seems to be incorrectly posted. Please double check with the collateral balance in Calypso.", vbCritical
+            End If
+Next Entry
+
+Exit Sub
+
+FileErrorHandling:
+    MsgBox "The Report for the previous business day could not be extracted", vbExclamation
+
+End Sub
+
+
+
+
