@@ -1,0 +1,642 @@
+Sub QueSplit()
+
+Dim strAdapt As String
+Dim RngAdapt, RngPrio, RngEarly, RngSameSecu, RngEur As Range
+Dim iLastrow1, iLastrow2 As Long
+
+Set RngAdapt = Calypso.Range(Calypso.Cells(2, 4), Calypso.Cells(2, 4).End(xlDown))
+Set RngPrio = List.Range("A:A")
+Set RngEarly = List.Range("D:D")
+Set RngSameSecu = List.Range("E:E")
+Set RngEur = List.Range("I:I")
+
+iLastrow1 = Inbound.Cells(53, 3).End(xlUp).Row
+iLastrow2 = Outbound.Cells(53, 3).End(xlUp).Row
+Inbound.Range("C3:C53").Font.ColorIndex = xlAutomatic
+Inbound.Range("C" & iLastrow1 & ":N53").Select
+
+ With Selection.Interior
+        .Pattern = xlNone
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+       
+        
+'L TO O Inbound
+If Inbound.Range("B34").Value = "L-O" Then
+For Each r In RngAdapt
+    iLastrow1 = Inbound.Cells(53, 3).End(xlUp).Row
+    If Left(r, 1) = "L" Or Left(r, 1) = "M" Or Left(r, 1) = "N" Or Left(r, 1) = "O" Then
+    
+     If r.Offset(0, 1) = "Receive" And Application.WorksheetFunction.CountIf(RngEur, r) = 0 Then
+     'r.Offset(0, 2) = "PRICED_RECEIVE"
+        a = r.Offset(0, 2)
+        Inbound.Cells(iLastrow1 + 1, 3) = r
+        Inbound.Cells(iLastrow1 + 1, 10) = r.Offset(0, -2)
+        'LGY OR REG VM
+           If r.Offset(0, -2) Like "*BOMI*" Then
+                    Inbound.Cells(iLastrow1 + 1, 3) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Inbound.Cells(iLastrow1 + 1, 14) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Inbound.Cells(iLastrow1 + 1, 14) = "LGY"
+            Else: Inbound.Cells(iLastrow1 + 1, 14) = ""
+            End If
+         'Same Day or Next Day
+            If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Inbound.Cells(iLastrow1 + 1, 8) = "Today"
+            ElseIf Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 1 Then
+                Inbound.Cells(iLastrow1 + 1, 8) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Inbound.Cells(iLastrow1 + 1, 3)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Inbound.Cells(iLastrow1 + 1, 3).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Inbound.Cells(iLastrow1 + 1, 13).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+           If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Inbound.Range(Cells(iLastrow1 + 1, 3), Cells(iLastrow1 + 1, 14)).Interior.Color = 65535
+           End If
+       
+   
+     End If
+         
+     
+    End If
+    Next
+End If
+
+'L to O Outbound
+    'insert if r is in high priority list, then red
+    'insert to seperate acadia or not
+'    If Left(r, 1) = "L" Or Left(r, 1) = "M" Or Left(r, 1) = "N" Or Left(r, 1) = "O" And r.Offset(0, 1) = "Pay" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+
+'A TO C Inbound
+
+If Inbound.Range("B34").Value = "A-C" Then
+For Each r In RngAdapt
+    iLastrow1 = Inbound.Cells(53, 3).End(xlUp).Row
+    If Left(r, 1) = "A" Or (Left(r, 1) = "B" And r <> "BMO") Or Left(r, 1) = "C" Then
+     If r.Offset(0, 1) = "Receive" And (Application.WorksheetFunction.CountIf(RngEur, r) = 0 Or r.Offset(0, 16) = "BKTOK") Then
+        Inbound.Cells(iLastrow1 + 1, 3) = r
+        Inbound.Cells(iLastrow1 + 1, 10) = r.Offset(0, -2)
+        'LGY OR REG VM
+            If r.Offset(0, -2) Like "*BOMI*" Then
+                    Inbound.Cells(iLastrow1 + 1, 3) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Inbound.Cells(iLastrow1 + 1, 14) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Inbound.Cells(iLastrow1 + 1, 14) = "LGY"
+            Else: Inbound.Cells(iLastrow1 + 1, 14) = ""
+            End If
+         'Same Day or Next Day
+            If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 0 Then
+            
+                Inbound.Cells(iLastrow1 + 1, 8) = "Today"
+            ElseIf Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 1 Then
+                Inbound.Cells(iLastrow1 + 1, 8) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Inbound.Cells(iLastrow1 + 1, 3)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Inbound.Cells(iLastrow1 + 1, 3).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Inbound.Cells(iLastrow1 + 1, 13).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+
+            If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Inbound.Range(Cells(iLastrow1 + 1, 3), Cells(iLastrow1 + 1, 14)).Interior.Color = 65535
+           End If
+     End If
+    End If
+    Next
+End If
+
+'D TO K Inbound
+
+If Inbound.Range("B34").Value = "D-K" Then
+For Each r In RngAdapt
+    iLastrow1 = Inbound.Cells(53, 3).End(xlUp).Row
+    If Left(r, 1) = "D" Or Left(r, 1) = "E" Or Left(r, 1) = "F" Or Left(r, 1) = "G" Or Left(r, 1) = "H" Or _
+    Left(r, 1) = "I" Or Left(r, 1) = "J" Or Left(r, 1) = "K" Then
+    
+     If r.Offset(0, 1) = "Receive" And Application.WorksheetFunction.CountIf(RngEur, r) = 0 Then
+        a = r.Offset(0, 2)
+        Inbound.Cells(iLastrow1 + 1, 3) = r
+        Inbound.Cells(iLastrow1 + 1, 10) = r.Offset(0, -2)
+        'LGY OR REG VM
+          If r.Offset(0, -2) Like "*BOMI*" Then
+                    Inbound.Cells(iLastrow1 + 1, 3) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Inbound.Cells(iLastrow1 + 1, 14) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Inbound.Cells(iLastrow1 + 1, 14) = "LGY"
+            Else: Inbound.Cells(iLastrow1 + 1, 14) = ""
+            End If
+         'Same Day or Next Day
+            If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Inbound.Cells(iLastrow1 + 1, 8) = "Today"
+            ElseIf Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 1 Then
+                Inbound.Cells(iLastrow1 + 1, 8) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Inbound.Cells(iLastrow1 + 1, 3)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Inbound.Cells(iLastrow1 + 1, 3).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Inbound.Cells(iLastrow1 + 1, 13).Font.Color = RGB(255, 0, 0)
+            End If
+                        
+          'highlight acadia cp
+           If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Inbound.Range(Cells(iLastrow1 + 1, 3), Cells(iLastrow1 + 1, 14)).Interior.Color = 65535
+           End If
+           
+     End If
+    End If
+    Next
+End If
+
+
+'P TO Z Inbound
+
+If Inbound.Range("B34").Value = "P-Z" Then
+For Each r In RngAdapt
+    iLastrow1 = Inbound.Cells(53, 3).End(xlUp).Row
+    If Left(r, 1) = "P" Or Left(r, 1) = "Q" Or Left(r, 1) = "R" Or Left(r, 1) = "S" Or Left(r, 1) = "T" Or Left(r, 1) = "U" Or Left(r, 1) = "V" Or Left(r, 1) = "W" _
+    Or Left(r, 1) = "X" Or Left(r, 1) = "Y" Or Left(r, 1) = "Z" Then
+    
+     If r.Offset(0, 1) = "Receive" And Application.WorksheetFunction.CountIf(RngEur, r) = 0 Then
+        a = r.Offset(0, 2)
+        Inbound.Cells(iLastrow1 + 1, 3) = r
+        Inbound.Cells(iLastrow1 + 1, 10) = r.Offset(0, -2)
+        'LGY OR REG VM
+            If r.Offset(0, -2) Like "*BOMI*" Then
+            Inbound.Cells(iLastrow1 + 1, 3) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Inbound.Cells(iLastrow1 + 1, 14) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Inbound.Cells(iLastrow1 + 1, 14) = "LGY"
+            Else: Inbound.Cells(iLastrow1 + 1, 14) = ""
+            End If
+         'Same Day or Next Day
+            If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Inbound.Cells(iLastrow1 + 1, 8) = "Today"
+            ElseIf Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 1 Then
+                Inbound.Cells(iLastrow1 + 1, 8) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Inbound.Cells(iLastrow1 + 1, 3)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Inbound.Cells(iLastrow1 + 1, 3).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Inbound.Cells(iLastrow1 + 1, 13).Font.Color = RGB(255, 0, 0)
+            End If
+                        
+            'highlight acadia cp
+           If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Inbound.Range(Cells(iLastrow1 + 1, 3), Cells(iLastrow1 + 1, 14)).Interior.Color = 65535
+           End If
+     End If
+    End If
+    Next
+End If
+
+'EURO
+
+If Inbound.Range("B34").Value = "EUROPE" Then
+For Each r In RngAdapt
+    iLastrow1 = Inbound.Cells(53, 3).End(xlUp).Row
+   
+    If Application.WorksheetFunction.CountIf(RngEur, r) > 0 Or r.Offset(0, 3) = "EUR" Then
+    
+     If r.Offset(0, 1) = "Receive" Then
+        a = r.Offset(0, 2)
+        Inbound.Cells(iLastrow1 + 1, 3) = r
+        Inbound.Cells(iLastrow1 + 1, 10) = r.Offset(0, -2)
+        'LGY OR REG VM
+             If r.Offset(0, -2) Like "*BOMI*" Or r.Offset(0, 16) = "BKTOK" Then
+                    Inbound.Cells(iLastrow1 + 1, 3) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Inbound.Cells(iLastrow1 + 1, 14) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Inbound.Cells(iLastrow1 + 1, 14) = "LGY"
+            Else: Inbound.Cells(iLastrow1 + 1, 14) = ""
+            End If
+         'Same Day or Next Day
+            If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Inbound.Cells(iLastrow1 + 1, 8) = "Today"
+            ElseIf Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 1 Then
+                Inbound.Cells(iLastrow1 + 1, 8) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Inbound.Cells(iLastrow1 + 1, 3)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Inbound.Cells(iLastrow1 + 1, 3).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Inbound.Cells(iLastrow1 + 1, 13).Font.Color = RGB(255, 0, 0)
+            End If
+        'highlight acadia cp
+           If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Inbound.Range(Cells(iLastrow1 + 1, 3), Cells(iLastrow1 + 1, 14)).Interior.Color = 65535
+           End If
+     End If
+    End If
+    Next
+End If
+
+'Ireland
+
+If Inbound.Range("B34").Value = "Ireland" Then
+For Each r In RngAdapt
+    iLastrow1 = Inbound.Cells(53, 3).End(xlUp).Row
+   
+    If r.Offset(0, -2) Like "*BOMI *" Then
+    
+     If r.Offset(0, 1) = "Receive" Then
+        a = r.Offset(0, 2)
+        Inbound.Cells(iLastrow1 + 1, 3) = r
+        Inbound.Cells(iLastrow1 + 1, 10) = r.Offset(0, -2)
+        'LGY OR REG VM
+             
+                    
+            If r.Offset(0, 17) Like "*REG*" Then
+                   Inbound.Cells(iLastrow1 + 1, 14) = "REG VM"
+                   ElseIf r.Offset(0, 16) Like "*LGY*" Then Inbound.Cells(iLastrow1 + 1, 14) = "LGY"
+                   Else: Inbound.Cells(iLastrow1 + 1, 14) = ""
+            End If
+         'Same Day or Next Day
+            If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Inbound.Cells(iLastrow1 + 1, 8) = "Today"
+            ElseIf Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 23) = 1 Then
+                Inbound.Cells(iLastrow1 + 1, 8) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Inbound.Cells(iLastrow1 + 1, 3)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Inbound.Cells(iLastrow1 + 1, 3).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Inbound.Cells(iLastrow1 + 1, 13).Font.Color = RGB(255, 0, 0)
+            End If
+        'highlight acadia cp
+           If Inbound.Cells(iLastrow1 + 1, 3) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Inbound.Range(Cells(iLastrow1 + 1, 3), Cells(iLastrow1 + 1, 14)).Interior.Color = 65535
+           End If
+     End If
+    End If
+    Next
+End If
+
+
+'Highlight priority again incase people double their queues
+Set RngInbound = Inbound.Range("C13:C53")
+
+For Each r In RngInbound
+  strAdapt = r.Value
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            r.Font.Color = RGB(255, 0, 0)
+            End If
+Next
+
+
+End Sub
+
+Sub anticipated_list()
+
+Dim strAdapt As String
+Dim RngAdapt, RngPrio, RngEarly, RngSameSecu, RngEur As Range
+Dim iLastrow1, iLastrow2 As Long
+
+Set RngAdapt = Calypso.Range(Calypso.Cells(2, 4), Calypso.Cells(2, 4).End(xlDown))
+Set RngPrio = List.Range("A:A")
+Set RngEarly = List.Range("D:D")
+Set RngSameSecu = List.Range("E:E")
+Set RngEur = List.Range("I:I")
+
+Outbound.Cells(12, 24) = "Adaptive"
+Outbound.Cells(12, 25) = "Settlement"
+Outbound.Cells(12, 26) = "LGY/RegVM"
+
+iLastrow2 = Outbound.Cells(1000, 24).End(xlUp).Row
+'L TO O outbound, still working on it , just finish changing inbound to outbound
+If Inbound.Range("B34").Value = "L-O" Then
+For Each r In RngAdapt
+    iLastrow2 = Outbound.Cells(1000, 24).End(xlUp).Row
+    If Left(r, 1) = "L" Or Left(r, 1) = "M" Or Left(r, 1) = "N" Or Left(r, 1) = "O" Then
+    
+     If r.Offset(0, 1) = "Pay" And Application.WorksheetFunction.CountIf(RngEur, r) = 0 And r.Offset(0, 2) <> "PRICED_NO_CALL" _
+     And r.Offset(0, 2) <> "NOT_SCHEDULED_NO_CALL" And r.Offset(0, 2) <> "NOT_SCHEDULED_PAY" And r.Offset(0, 2) <> "PRICED_NO_CALL" Then
+     'r.Offset(0, 2) = "PRICED_RECEIVE"
+        a = r.Offset(0, 17)
+        Outbound.Cells(iLastrow2 + 1, 24) = r
+        Outbound.Cells(iLastrow2 + 1, 27) = r.Offset(0, -2)
+        'LGY OR REG VM
+                   
+            If r.Offset(0, -2) Like "*BOMI*" Then
+                   Outbound.Cells(iLastrow2 + 1, 24) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Outbound.Cells(iLastrow2 + 1, 26) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Outbound.Cells(iLastrow2 + 1, 26) = "LGY"
+            Else: Outbound.Cells(iLastrow2 + 1, 26) = ""
+            End If
+         'Same Day or Next Day
+            If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Outbound.Cells(iLastrow2 + 1, 25) = "Today"
+            ElseIf Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 1 Then
+                Outbound.Cells(iLastrow2 + 1, 25) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Outbound.Cells(iLastrow2 + 1, 24)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+           If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Outbound.Range(Cells(iLastrow2 + 1, 24), Cells(iLastrow2 + 1, 27)).Interior.Color = 65535
+           End If
+          
+     End If
+         
+     
+    End If
+    Next
+End If
+' A-C
+If Inbound.Range("B34").Value = "A-C" Then
+For Each r In RngAdapt
+    iLastrow2 = Outbound.Cells(1000, 24).End(xlUp).Row
+    If Left(r, 1) = "A" Or (Left(r, 1) = "B" And r <> "BMO") Or Left(r, 1) = "C" Then
+    
+     If r.Offset(0, 1) = "Pay" And (Application.WorksheetFunction.CountIf(RngEur, r) = 0 Or r.Offset(0, 16) = "BKTOK") And r.Offset(0, 2) <> "PRICED_NO_CALL" _
+     And r.Offset(0, 2) <> "NOT_SCHEDULED_NO_CALL" And r.Offset(0, 2) <> "NOT_SCHEDULED_PAY" And r.Offset(0, 2) <> "PRICED_NO_CALL" Then
+     'r.Offset(0, 2) = "PRICED_RECEIVE"
+        a = r.Offset(0, 2)
+        Outbound.Cells(iLastrow2 + 1, 24) = r
+        Outbound.Cells(iLastrow2 + 1, 27) = r.Offset(0, -2)
+        'LGY OR REG VM
+          If r.Offset(0, -2) Like "*BOMI*" Then
+                   Outbound.Cells(iLastrow2 + 1, 24) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Outbound.Cells(iLastrow2 + 1, 26) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Outbound.Cells(iLastrow2 + 1, 26) = "LGY"
+            Else: Outbound.Cells(iLastrow2 + 1, 26) = ""
+            End If
+         'Same Day or Next Day
+            If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Outbound.Cells(iLastrow2 + 1, 25) = "Today"
+            ElseIf Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 1 Then
+                Outbound.Cells(iLastrow2 + 1, 25) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Outbound.Cells(iLastrow2 + 1, 24)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+           If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Outbound.Range(Cells(iLastrow2 + 1, 24), Cells(iLastrow2 + 1, 27)).Interior.Color = 65535
+           End If
+          
+     End If
+         
+     
+    End If
+    Next
+End If
+' D-K
+If Inbound.Range("B34").Value = "D-K" Then
+For Each r In RngAdapt
+    iLastrow2 = Outbound.Cells(1000, 24).End(xlUp).Row
+    If Left(r, 1) = "D" Or Left(r, 1) = "E" Or Left(r, 1) = "F" Or Left(r, 1) = "G" Or Left(r, 1) = "H" Or Left(r, 1) = "I" Or Left(r, 1) = "J" Or Left(r, 1) = "G" Or Left(r, 1) = "K" Then
+    
+     If r.Offset(0, 1) = "Pay" And Application.WorksheetFunction.CountIf(RngEur, r) = 0 And r.Offset(0, 2) <> "PRICED_NO_CALL" _
+     And r.Offset(0, 2) <> "NOT_SCHEDULED_NO_CALL" And r.Offset(0, 2) <> "NOT_SCHEDULED_PAY" And r.Offset(0, 2) <> "PRICED_NO_CALL" Then
+     'r.Offset(0, 2) = "PRICED_RECEIVE"
+        a = r.Offset(0, 2)
+        Outbound.Cells(iLastrow2 + 1, 24) = r
+        Outbound.Cells(iLastrow2 + 1, 27) = r.Offset(0, -2)
+        'LGY OR REG VM
+          If r.Offset(0, -2) Like "*BOMI*" Then
+                   Outbound.Cells(iLastrow2 + 1, 24) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Outbound.Cells(iLastrow2 + 1, 26) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Outbound.Cells(iLastrow2 + 1, 26) = "LGY"
+            Else: Outbound.Cells(iLastrow2 + 1, 26) = ""
+            End If
+         'Same Day or Next Day
+            If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Outbound.Cells(iLastrow2 + 1, 25) = "Today"
+            ElseIf Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 1 Then
+                Outbound.Cells(iLastrow2 + 1, 25) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Outbound.Cells(iLastrow2 + 1, 24)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+           If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Outbound.Range(Cells(iLastrow2 + 1, 24), Cells(iLastrow2 + 1, 27)).Interior.Color = 65535
+           End If
+          
+     End If
+         
+     
+    End If
+    Next
+End If
+'P-Z
+If Inbound.Range("B34").Value = "P-Z" Then
+For Each r In RngAdapt
+    iLastrow2 = Outbound.Cells(1000, 24).End(xlUp).Row
+    If Left(r, 1) = "P" Or Left(r, 1) = "Q" Or Left(r, 1) = "R" Or Left(r, 1) = "S" Or Left(r, 1) = "T" Or Left(r, 1) = "U" _
+    Or Left(r, 1) = "V" Or Left(r, 1) = "W" Or Left(r, 1) = "X" Or Left(r, 1) = "Y" Or Left(r, 1) = "Z" Then
+    
+     If r.Offset(0, 1) = "Pay" And Application.WorksheetFunction.CountIf(RngEur, r) = 0 And r.Offset(0, 2) <> "PRICED_NO_CALL" _
+     And r.Offset(0, 2) <> "NOT_SCHEDULED_NO_CALL" And r.Offset(0, 2) <> "NOT_SCHEDULED_PAY" And r.Offset(0, 2) <> "PRICED_NO_CALL" Then
+     'r.Offset(0, 2) = "PRICED_RECEIVE"
+        a = r.Offset(0, 2)
+        Outbound.Cells(iLastrow2 + 1, 24) = r
+        Outbound.Cells(iLastrow2 + 1, 27) = r.Offset(0, -2)
+        'LGY OR REG VM
+          If r.Offset(0, -2) Like "*BOMI*" Then
+                   Outbound.Cells(iLastrow2 + 1, 24) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Outbound.Cells(iLastrow2 + 1, 26) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Outbound.Cells(iLastrow2 + 1, 26) = "LGY"
+            Else: Outbound.Cells(iLastrow2 + 1, 26) = ""
+            End If
+         'Same Day or Next Day
+            If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Outbound.Cells(iLastrow2 + 1, 25) = "Today"
+            ElseIf Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 1 Then
+                Outbound.Cells(iLastrow2 + 1, 25) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Outbound.Cells(iLastrow2 + 1, 24)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+           If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Outbound.Range(Cells(iLastrow2 + 1, 24), Cells(iLastrow2 + 1, 27)).Interior.Color = 65535
+           End If
+          
+     End If
+         
+     
+    End If
+    Next
+End If
+'EURO
+If Inbound.Range("B34").Value = "EUROPE" Then
+For Each r In RngAdapt
+    iLastrow2 = Outbound.Cells(1000, 24).End(xlUp).Row
+      
+     If r.Offset(0, 1) = "Pay" And (Application.WorksheetFunction.CountIf(RngEur, r) > 0 Or r.Offset(0, 3) = "EUR") And r.Offset(0, 2) <> "PRICED_NO_CALL" _
+     And r.Offset(0, 2) <> "NOT_SCHEDULED_NO_CALL" And r.Offset(0, 2) <> "NOT_SCHEDULED_PAY" And r.Offset(0, 2) <> "PRICED_NO_CALL" Then
+     'r.Offset(0, 2) = "PRICED_RECEIVE"
+        a = r.Offset(0, 2)
+        Outbound.Cells(iLastrow2 + 1, 24) = r
+        Outbound.Cells(iLastrow2 + 1, 27) = r.Offset(0, -2)
+        'LGY OR REG VM
+           If r.Offset(0, -2) Like "*BOMI*" Or r.Offset(0, 16) = "BKTOK" Then
+                   Outbound.Cells(iLastrow2 + 1, 24) = ""
+                    
+            ElseIf r.Offset(0, 17) Like "*REG*" Then Outbound.Cells(iLastrow2 + 1, 26) = "REG VM"
+            ElseIf r.Offset(0, 16) Like "*LGY*" Then Outbound.Cells(iLastrow2 + 1, 26) = "LGY"
+            Else: Outbound.Cells(iLastrow2 + 1, 26) = ""
+            End If
+         'Same Day or Next Day
+            If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Outbound.Cells(iLastrow2 + 1, 25) = "Today"
+            ElseIf Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 1 Then
+                Outbound.Cells(iLastrow2 + 1, 25) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Outbound.Cells(iLastrow2 + 1, 24)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+           If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Outbound.Range(Cells(iLastrow2 + 1, 24), Cells(iLastrow2 + 1, 27)).Interior.Color = 65535
+           End If
+          
+     End If
+     
+    
+    Next
+End If
+
+'EURO
+If Inbound.Range("B34").Value = "Ireland" Then
+For Each r In RngAdapt
+    iLastrow2 = Outbound.Cells(1000, 24).End(xlUp).Row
+     If r.Offset(0, 1) = "Pay" And (r.Offset(0, -2) Like "*BOMI *") And r.Offset(0, 2) <> "PRICED_NO_CALL" _
+     And r.Offset(0, 2) <> "NOT_SCHEDULED_NO_CALL" And r.Offset(0, 2) <> "NOT_SCHEDULED_PAY" And r.Offset(0, 2) <> "PRICED_NO_CALL" Then
+     'r.Offset(0, 2) = "PRICED_RECEIVE"
+        a = r.Offset(0, 2)
+        Outbound.Cells(iLastrow2 + 1, 24) = r
+        Outbound.Cells(iLastrow2 + 1, 27) = r.Offset(0, -2)
+        'LGY OR REG VM
+           
+                    
+            If r.Offset(0, 17) Like "*REG*" Then
+                Outbound.Cells(iLastrow2 + 1, 26) = "REG VM"
+                ElseIf r.Offset(0, 16) Like "*LGY*" Then Outbound.Cells(iLastrow2 + 1, 26) = "LGY"
+                Else: Outbound.Cells(iLastrow2 + 1, 26) = ""
+            End If
+            
+         'Same Day or Next Day
+            If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 0 Then
+            a = r.Offset(0, 23)
+                Outbound.Cells(iLastrow2 + 1, 25) = "Today"
+            ElseIf Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 23) = 1 Then
+                Outbound.Cells(iLastrow2 + 1, 25) = "Tomorrow"
+            End If
+          'Highlight priority in red
+            strAdapt = Outbound.Cells(iLastrow2 + 1, 24)
+            If Application.WorksheetFunction.CountIf(RngPrio, strAdapt) > 0 Or Application.WorksheetFunction.CountIf(RngEarly, strAdapt) > 0 Then
+            Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'Comment Sameday security not working, need to be fixed.
+            If Application.WorksheetFunction.CountIf(RngSameSecu, strAdapt) > 0 Then
+'             Inbound.Cells(iLastrow1 + 1, 13).Value = "Same Day Security"
+             Outbound.Cells(iLastrow2 + 1, 24).Font.Color = RGB(255, 0, 0)
+            End If
+           'highlight acadia cp
+           If Outbound.Cells(iLastrow2 + 1, 24) <> "" And r.Offset(0, 19) = "Acadiasoft SCSA" Then
+           a = r.Offset(0, 19)
+           Outbound.Range(Cells(iLastrow2 + 1, 24), Cells(iLastrow2 + 1, 27)).Interior.Color = 65535
+           End If
+          
+     End If
+     
+    
+    Next
+End If
+
+End Sub
