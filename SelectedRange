@@ -1,0 +1,32 @@
+Sub CopySelectedRange()
+
+Dim myRange As Range
+Dim r As Range
+Dim s As String
+
+Set myRange = Selection
+
+myRange.Select
+
+s = ""
+For Each r In myRange
+    If UCase(Right(r.Value, 3)) = "LGY" Then
+        s = Left(r.Value, Len(r.Value) - 3) & "," & s
+    ElseIf UCase(r.Value) = "TDX" Then
+        s = "TD" & "," & s
+    ElseIf UCase(Right(r.Value, 5)) = "_BOMI" Then
+        s = Left(r.Value, Len(r.Value) - 5) & "," & s
+    ElseIf UCase(Right(r.Value, 7)) = "_HARRIS" Then
+        s = Left(r.Value, Len(r.Value) - 7) & "," & s
+    Else:
+        s = r.Value & "," & s
+    End If
+Next r
+
+If Right(s, 1) = "," Then s = Left(s, Len(s) - 1)
+
+
+CalypsoSheet.Range("B17").Value = s
+CalypsoSheet.Range("B17").Copy
+
+End Sub
