@@ -1,0 +1,192 @@
+
+Sub HKUpload()
+
+Dim InboundCalls As Range
+Dim OutboundCalls As Range
+Dim r As Range
+Dim SameDayEntries As Range
+Dim NextDayEntries As Range
+Dim i As Integer
+Dim Number As Double
+
+Call ValidateDirectionInbound
+Call ValidateDirectionOutBound
+
+HK.Range("A1:AF100").ClearContents
+HK.Range("A1:AF100").ClearFormats
+HK.Range("A1:AF100").Interior.Color = vbWhite
+
+Inbound.Activate
+Set InboundCalls = Range("C13", Range("C12").End(xlDown))
+
+Outbound.Activate
+Set OutboundCalls = Outbound.Range("C13", Range("C12").End(xlDown))
+
+HK.Range("C2").Value = "SAME DAY MOVEMENT"
+
+With HK
+For Each r In InboundCalls
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+    And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, 1).Value = "Turnaround Free Receive From:"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Receive From:"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+        And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, 1).Value = "Turnaround Free Receive From:"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Receive From:"
+        End If
+    End If
+Next r
+
+For Each r In OutboundCalls
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+        And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+        And r.Offset(0, 5).Value = "Today" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("C3").Value = "" Then
+            .Range("C3").Value = r.Offset
+            .Range("C3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C3").Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        Else
+            .Range("C2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("C2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("C2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("C2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        End If
+    End If
+Next r
+
+' *******NEXT DAY ************
+
+HK.Range("M2").Value = "NEXT DAY MOVEMENT"
+
+For Each r In InboundCalls
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, 1).Value = "Turnaround Free Receive From:"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Receive From:"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, 1).Value = "Turnaround Free Receive From:"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Receive From:"
+        End If
+    End If
+Next r
+
+For Each r In OutboundCalls
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Deliver" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        End If
+    End If
+    
+    If (Left(r.Offset(0, 3), 1) = "9" _
+        Or Left(r.Offset(0, 3), 1) = "3") _
+        And r.Offset(0, 5).Value = "Tomorrow" And r.Offset(0, 4) > 0 And r.Offset(0, 2).Value = "Return" Then
+        If .Range("M3").Value = "" Then
+            .Range("M3").Value = r.Offset
+            .Range("M3").Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M3").Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M3").Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        Else
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset
+            .Range("M2").End(xlDown).Offset(0, 3).Value = r.Offset(0, 4)
+            .Range("M2").End(xlDown).Offset(0, 4).Value = r.Offset(0, 3)
+            .Range("M2").End(xlDown).Offset(0, 1).Value = "Turnaround Free Delivery To:"
+        End If
+    End If
+Next r
+
+
+
+HK.Activate
+
+Range("A1:Z100").Font.Name = "Times New Roman"
+Range("C2").Font.Color = vbRed
+Range("C2").Font.Bold = True
+Range("M2").Font.Color = vbRed
+Range("M2").Font.Bold = True
+
+Range("C3", Range("C3").End(xlDown)).Columns.AutoFit
+Range("G3", Range("G3").End(xlDown)).Columns.AutoFit
+Range("D3", Range("D3").End(xlDown)).Columns.AutoFit
+Range("B3", Range("B3").End(xlDown)).Columns.AutoFit
+Range("M3", Range("M3").End(xlDown)).Columns.AutoFit
+Range("Q3", Range("Q3").End(xlDown)).Columns.AutoFit
+Range("N3", Range("N3").End(xlDown)).Columns.AutoFit
+Range("L3", Range("L3").End(xlDown)).Columns.AutoFit
+
+Range("F3:F100").NumberFormat = "#,###"
+Range("P3:P100").NumberFormat = "#,###"
+End With
+End Sub
+
+
