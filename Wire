@@ -1,0 +1,198 @@
+Sub OpenFile()
+
+Dim fd As FileDialog
+Dim ActionClicked As Boolean
+Dim Response As Integer
+
+    KillIt = False
+    Set fd = Application.FileDialog(msoFileDialogOpen)
+    fd.AllowMultiSelect = False
+    
+    ActionClicked = fd.Show
+    
+    If ActionClicked Then
+        Inbound.Range("AW17").Value = fd.SelectedItems(1)
+        Inbound.Range("AV17").Value = "Wire Template"
+    Else:
+        MsgBox "You didn't select a folder", vbExclamation
+        KillIt = True
+        Exit Sub
+    End If
+    
+    
+    Application.AskToUpdateLinks = True
+
+
+End Sub
+
+
+Sub CreateWire()
+Dim WorkWb As Workbook
+Dim WireWb As Workbook
+Dim KillIt As Boolean
+Dim Adaptiv As Range
+Dim Amount As Double
+Dim ws As Worksheet
+Dim wsName As String
+Dim FirstSpace As Integer
+Dim FoundAdaptiv As Boolean
+Dim AdaptivName As String
+Dim ModAdaptivName As String
+Dim FileName As String
+Dim strCurrency As String
+Dim strAdaptiv As String
+Dim Count As String
+Dim iLastrow As Long
+
+    AdaptivName = InputBox("Adaptiv Name")
+    
+        If Right(AdaptivName, 1) = "2" _
+        Or Right(AdaptivName, 1) = "3" _
+        Or Right(AdaptivName, 1) = "4" Then
+            ModAdaptivName = Left(AdaptivName, Len(AdaptivName) - 1)
+        Else: ModAdaptivName = AdaptivName
+        End If
+
+Set WorkWb = ThisWorkbook
+
+If Outbound.Range("C13") > "" Then
+iLastrow = Outbound.Range("C12").End(xlDown).Row
+Else
+MsgBox " No outbounds or Gap exist in outbound tab, please check if wire is needed "
+Exit Sub
+End If
+
+On Error GoTo WrongCell
+Set Adaptiv = Outbound.Range("C:C").Find(what:=ModAdaptivName, MatchCase:=False, lookat:=xlWhole)
+Count = Application.WorksheetFunction.CountIf(Outbound.Range("C13:C" & iLastrow), ModAdaptivName)
+
+'    If Right(AdaptivName, 1) = "2" _
+'    Or Right(AdaptivName, 1) = "3" _
+'    Or Right(AdaptivName, 1) = "4" Then
+'        Set Adaptiv = Outbound.Range("C:C").FindNext(Adaptiv)
+'    End If
+'
+'    If Right(AdaptivName, 1) = "3" _
+'    Or Right(AdaptivName, 1) = "4" Then
+'        Set Adaptiv = Outbound.Range("C:C").FindNext(Adaptiv)
+'    End If
+'
+'    If Right(AdaptivName, 1) = "4" Then
+'        Set Adaptiv = Outbound.Range("C:C").FindNext(Adaptiv)
+'    End If
+    'Print out all wire that have the same adaptiv
+For i = 1 To Count
+    If i > 1 Then
+    Set Adaptiv = Outbound.Range("C:C").FindNext(Adaptiv)
+    End If
+    
+    If Len(Adaptiv.Offset(0, 3)) < 4 Then GoTo Continue
+    GoTo skipnext
+Continue:
+strCurrency = Adaptiv.Offset(0, 3).Value
+
+Amount = Adaptiv.Offset(0, 4).Value
+If Amount = 0 Then
+    MsgBox "Wire Amount = $0"
+'    Exit Sub
+End If
+On Error GoTo 0
+
+
+FoundAdaptiv = False
+ReDoIt:
+On Error GoTo CreateFileDesitnation
+Set WireWb = Workbooks.Open(Inbound.Range("AW17").Value)
+On Error GoTo 0
+
+WireWb.Activate
+
+FileName = "'" & WireWb.Name & "'!CreatePDFforWire"
+
+
+For Each ws In Worksheets
+    wsName = ws.Name
+    FirstSpace = InStr(1, wsName, " ")
+    If FirstSpace > 0 Then wsName = Left(wsName, FirstSpace - 1)
+    
+    strAdaptiv = Adaptiv.Value
+      
+    If Adaptiv = "STATE" And strCurrency = "CAD" Then
+    strAdaptiv = "STATECAD"
+    ElseIf strAdaptiv = "STATE" And strCurrency = "USD" Then
+    strAdaptiv = "STATEUSD"
+    End If
+    
+           
+    If wsName = strAdaptiv _
+    Or (wsName = Left(Adaptiv.Value, Len(Adaptiv.Value) - 1) And Adaptiv.Value = "TDX") Then
+    
+    FoundAdaptiv = True
+    ws.Activate
+    Range("F13").Value = Amount
+    
+    If Adaptiv.Offset(0, 5).Value = "Tomorrow" And Weekday(Date) <> vbFriday Then
+        Range("G4").Value = "=Now()+1"
+    Else
+        Range("G4").Value = "=Now()+3"
+    End If
+    
+    If Adaptiv.Offset(0, 5).Value = "Today" Then
+        Range("G4").Value = "=Now()"
+    End If
+
+'
+'Application.EnableEvents = False
+'Application.DisplayAlerts = False
+    Application.DisplayAlerts = False
+    ws.PrintOut
+    
+    
+'    Dim strDate As String
+'    Dim strCMG As String
+'strDate = VBA.Format(Date, "mmm dd yy")
+'strCMG = Inbound.Range("AW15")
+'ws.ExportAsFixedFormat Type:=xlTypePDF, FileName:=strCMG & "\MECH\" & UCase(AdaptivName) & " Wire " & strDate & ".pdf"
+'Quality = xlQualityStandard
+'IncludeDocProperties = True
+'IgnorePrintAreas = False
+'OpenAfterPublish = True
+'
+'Application.Run (FileName)
+
+WireWb.Close
+
+    Exit For
+    End If
+Next ws
+
+skipnext:
+Next
+
+If FoundAdaptiv = False Then
+    MsgBox "Adaptiv Name was not found"
+End If
+
+On Error Resume Next
+Application.DisplayAlerts = False
+WireWb.Close
+
+
+Application.Calculation = xlCalculationAutomatic
+Application.ScreenUpdating = True
+Application.DisplayStatusBar = True
+Application.EnableEvents = True
+ActiveSheet.DisplayPageBreaks = True
+Application.DisplayAlerts = True
+
+
+Exit Sub
+CreateFileDesitnation:
+    Call OpenFile
+    If KillIt = True Then Exit Sub
+    GoTo ReDoIt
+Exit Sub
+WrongCell:
+    MsgBox "Please Input a Valid Adaptiv Code"
+End Sub
+
