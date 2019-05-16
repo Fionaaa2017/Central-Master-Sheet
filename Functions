@@ -1,0 +1,80 @@
+Function SunLife(ContractValue As Double, OriginalQuantity As Double) As Double
+Dim OriginalPrice As Double
+Dim AdjustedPrice As Double
+Dim AdjustedQuantity As Double
+
+OriginalPrice = ContractValue / OriginalQuantity
+AdjustedPrice = OriginalPrice * 0.98
+AdjustedQuantity = ContractValue / AdjustedPrice
+SunLife = AdjustedQuantity
+End Function
+
+Private Sub SunLifeRegister()
+    Application.MacroOptions _
+        Macro:="SunLife", _
+        Description:="Calcualtes the Correct Quantity of Bonds", _
+        Category:="My UDF Category", _
+        ArgumentDescriptions:=Array( _
+            "Enter the Original Contract value", _
+            "Enter the Original Contract Quantity")
+End Sub
+
+Function MBSPrice(OriginalPrice As Double, PoolFactor As Double, Haircut As Double) As Double
+MBSPrice = OriginalPrice * PoolFactor * (1 - (Haircut / 100))
+End Function
+
+Private Sub MBSRegister()
+    Application.MacroOptions _
+        Macro:="MBSPrice", _
+        Description:="Calculates the MBS Price", _
+        Category:="My UDF Category", _
+        ArgumentDescriptions:=Array( _
+            "Enter the Original Price", _
+            "Enter the Pool Factor", _
+            "Enter the Haircut (Whole Number, NOT %)")
+End Sub
+
+Sub SearchList()
+'
+' Macro1 Macro
+'
+
+'
+    With Selection.Validation
+        .Delete
+        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, Operator:= _
+        xlBetween, Formula1:="='Contract Name'!$D:$D"
+        .IgnoreBlank = True
+        .InCellDropdown = True
+        .InputTitle = ""
+        .ErrorTitle = ""
+        .InputMessage = ""
+        .ErrorMessage = ""
+        .ShowInput = True
+        .ShowError = False
+    End With
+End Sub
+
+Sub CreatList()
+Dim Str As String
+Dim Rng As Range
+Dim iLastrow, iLastrow1 As Long
+
+Contracts.Range("D:D").ClearContents
+iLastrow = Contracts.Cells(Contracts.rows.Count, 4).End(xlUp).Row
+
+Set Rng = Contracts.Range(Contracts.Cells(1, 1), Contracts.Cells(1, 1).End(xlDown))
+
+Str = UCase(ActiveSheet.Cells(ActiveCell.Row, 3).Value)
+
+For Each c In Rng
+iLastrow = Contracts.Cells(Contracts.rows.Count, 4).End(xlUp).Row
+    If InStr(1, c, Str) > 0 Then
+    Contracts.Cells(iLastrow + 1, 4) = c
+    End If
+Next
+
+End Sub
+
+
+
