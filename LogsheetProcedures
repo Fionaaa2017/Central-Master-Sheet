@@ -1,0 +1,203 @@
+Sub SameDayLogSheet()
+
+Dim Calls As Range
+Dim r As Range
+
+LogSheet.Range("B3:E22").ClearContents
+LogSheet.Range("K3:N22").ClearContents
+
+LogSheet.Range("F3") = "=Today()"
+
+Inbound.Activate
+
+Set Calls = Range("C13", Range("C12").End(xlDown))
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Today" And Not (r.Offset(0, 4).Value = 0) Then
+        With LogSheet
+        If .Range("B3") = "" Then
+            .Range("B3") = r.Value
+            .Range("D3") = r.Offset(0, 4).Value
+            .Range("E3") = r.Offset(0, 3).Value
+        Else
+            .Range("B2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("D2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 4).Value
+            .Range("E2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 3).Value
+        End If
+        End With
+    End If
+Next r
+
+Outbound.Activate
+
+Set Calls = Range("C13", Range("C12").End(xlDown))
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Today" And Not (r.Offset(0, 4).Value = 0) Then
+        With LogSheet
+        If .Range("K3") = "" Then
+            .Range("K3") = r.Value
+            .Range("M3") = r.Offset(0, 4).Value
+            .Range("N3") = r.Offset(0, 3).Value
+        Else
+            .Range("K2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 4).Value
+            .Range("N2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 3).Value
+        End If
+        End With
+    End If
+Next r
+
+
+LogSheet.Activate
+
+Range("B3:E500").Sort Key1:=Range("E3"), Order1:=xlAscending, key2:=Range("D3"), order2:=xlAscending
+Range("K3:N500").Sort Key1:=Range("N3"), Order1:=xlAscending, key2:=Range("M3"), order2:=xlAscending
+
+Range("A1").Select
+End Sub
+
+Sub NextDayLogSheet()
+
+Dim Calls As Range
+Dim r As Range
+
+LogSheet.Range("B3:E22").ClearContents
+LogSheet.Range("K3:N22").ClearContents
+
+
+LogSheet.Range("F3") = "=WORKDAY(TODAY(),1,Holiday!$A1:$A467)"
+
+Inbound.Activate
+
+Set Calls = Range("C13", Range("C12").End(xlDown))
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Tomorrow" And Not (r.Offset(0, 4).Value = 0) Then
+        With LogSheet
+        If .Range("B3") = "" Then
+            .Range("B3") = r.Value
+            .Range("D3") = r.Offset(0, 4).Value
+            .Range("E3") = r.Offset(0, 3).Value
+        Else
+            .Range("B2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("D2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 4).Value
+            .Range("E2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 3).Value
+        End If
+        End With
+    End If
+Next r
+
+Outbound.Activate
+
+Set Calls = Range("C13", Range("C12").End(xlDown))
+For Each r In Calls
+    If r.Offset(0, 5).Value = "Tomorrow" And Not (r.Offset(0, 4).Value = 0) Then
+        With LogSheet
+        If .Range("K3") = "" Then
+            .Range("K3") = r.Value
+            .Range("M3") = r.Offset(0, 4).Value
+            .Range("N3") = r.Offset(0, 3).Value
+        Else
+            .Range("K2").End(xlDown).Offset(1, 0).Value = r.Value
+            .Range("M2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 4).Value
+            .Range("N2").End(xlDown).Offset(1, 0).Value = r.Offset(0, 3).Value
+        End If
+        End With
+    End If
+Next r
+
+
+LogSheet.Activate
+
+Range("B3:E500").Sort Key1:=Range("E3"), Order1:=xlAscending, key2:=Range("D3"), order2:=xlAscending
+Range("K3:N500").Sort Key1:=Range("N3"), Order1:=xlAscending, key2:=Range("M3"), order2:=xlAscending
+
+Range("A1").Select
+End Sub
+
+
+
+Sub ClearLogSheet()
+Range("B3:E22").ClearContents
+Range("K3:N22").ClearContents
+End Sub
+
+
+Sub CopySheet()
+Sheets("LogSheet").Copy
+End Sub
+
+Sub PrintLogSheet()
+
+Dim s As Variant
+
+On Error GoTo ErrorHandling
+s = InputBox("Enter Number of Copies.Only enter digits from 1-9")
+
+If s = "" Then
+    s = 1
+ElseIf s = 1 Then s = 1
+ElseIf s = 2 Then s = 2
+ElseIf s = 3 Then s = 3
+ElseIf s = 4 Then s = 4
+ElseIf s = 5 Then s = 5
+ElseIf s = 6 Then s = 6
+ElseIf s = 7 Then s = 7
+ElseIf s = 8 Then s = 8
+ElseIf s = 9 Then s = 9
+
+Else:
+    MsgBox "Invalid Entry"
+    Exit Sub
+End If
+
+
+ActiveSheet.PageSetup.Orientation = xlLandscape
+ActiveSheet.Range("A1:S23").PrintOut Copies:=s
+
+Exit Sub
+ErrorHandling:
+
+If s = "" Then Resume Next
+
+MsgBox "Invalid Entry"
+
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
