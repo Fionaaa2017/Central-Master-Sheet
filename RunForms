@@ -1,0 +1,3 @@
+Sub DisplayResetFoldersForm()
+frmFilePaths.Show
+End Sub
