@@ -1,0 +1,737 @@
+Public KillIt As Boolean
+
+Sub CompleteOutboundND()
+
+Dim Adaptiv() As String
+Dim Nominal() As Long
+Dim Cusip() As String
+Dim r As Range
+Dim Count As Integer
+Dim i As Integer
+Dim wb As Workbook
+Dim MovementWb As Workbook
+Dim k As Integer
+Dim ActCell As Range
+Dim WorkWb As Workbook
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    End If
+Next wb
+
+WorkWb.Activate
+Worksheets("CAD").Activate
+
+
+If Range("M3") = "" Then
+    Exit Sub
+End If
+
+
+
+
+i = 0
+For Each r In Range("M3", Range("M2").End(xlDown))
+    If r.Offset(0, -1).Value = "DELIVER" And r.Font.Bold = False Then
+        i = i + 1
+    End If
+Next r
+
+If i = 0 Then
+    Exit Sub
+End If
+
+ReDim Adaptiv(i - 1)
+ReDim Nominal(i - 1)
+ReDim Cusip(i - 1)
+
+
+i = 0
+For Each r In Range("M3", Range("M2").End(xlDown))
+    If r.Offset(0, -1).Value = "DELIVER" And r.Font.Bold = False Then
+        i = i + 1
+        Adaptiv(i - 1) = r.Value
+        Nominal(i - 1) = r.Offset(0, 2).Value
+        Cusip(i - 1) = r.Offset(0, 4).Value
+    End If
+Next r
+
+
+' ******* Second Part of Procedure*******
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        Set MovementWb = wb
+    End If
+Next wb
+
+If MovementWb Is Nothing Then
+    Exit Sub
+End If
+
+
+
+MovementWb.Activate
+
+
+Sheets("CAD Collat Mvt In&Out").Activate
+
+
+For k = 0 To i - 1
+    If Range("D9") = "" Then
+        Range("D9").Select
+    Else:
+        Range("D8").End(xlDown).Offset(1, 0).Select
+    End If
+    Set ActCell = ActiveCell
+        With ActCell
+            .Offset(0, -1).Value = "DELIVER"
+            .Value = Adaptiv(k)
+            .Offset(0, 1).Value = Nominal(k)
+            .Offset(0, 2).Value = Cusip(k)
+        End With
+
+Next k
+
+Erase Adaptiv
+Erase Nominal
+Erase Cusip
+
+End Sub
+
+Sub CompleteInboundND()
+
+Dim Adaptiv() As String
+Dim Nominal() As Long
+Dim Cusip() As String
+Dim r As Range
+Dim Count As Integer
+Dim i As Integer
+Dim wb As Workbook
+Dim MovementWb As Workbook
+Dim k As Integer
+Dim ActCell As Range
+Dim WorkWb As Workbook
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    End If
+Next wb
+
+WorkWb.Activate
+Worksheets("CAD").Activate
+
+
+
+If Range("M3") = "" Then
+    Exit Sub
+End If
+
+
+
+
+i = 0
+For Each r In Range("M3", Range("M2").End(xlDown))
+    If r.Offset(0, -1).Value = "RECEIVE" And r.Font.Bold = False Then
+        i = i + 1
+    End If
+Next r
+
+If i = 0 Then
+    Exit Sub
+End If
+
+ReDim Adaptiv(i - 1)
+ReDim Nominal(i - 1)
+ReDim Cusip(i - 1)
+
+
+i = 0
+For Each r In Range("M3", Range("M2").End(xlDown))
+    If r.Offset(0, -1).Value = "RECEIVE" And r.Font.Bold = False Then
+        i = i + 1
+        Adaptiv(i - 1) = r.Value
+        Nominal(i - 1) = r.Offset(0, 2).Value
+        Cusip(i - 1) = r.Offset(0, 4).Value
+    End If
+Next r
+
+
+' ******* Second Part of Procedure*******
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        Set MovementWb = wb
+    End If
+Next wb
+
+If MovementWb Is Nothing Then
+    Exit Sub
+End If
+
+
+
+MovementWb.Activate
+
+Sheets("CAD Collat Mvt In&Out").Activate
+
+
+For k = 0 To i - 1
+    If Range("D9") = "" Then
+        Range("D9").Select
+    Else:
+        Range("D8").End(xlDown).Offset(1, 0).Select
+    End If
+    Set ActCell = ActiveCell
+        With ActCell
+            .Offset(0, -1).Value = "RECEIVE"
+            .Value = Adaptiv(k)
+            .Offset(0, 1).Value = Nominal(k)
+            .Offset(0, 2).Value = Cusip(k)
+        End With
+
+Next k
+
+Erase Adaptiv
+Erase Nominal
+Erase Cusip
+
+End Sub
+
+Sub CompleteInboundSD()
+
+Dim Adaptiv() As String
+Dim Nominal() As Long
+Dim Cusip() As String
+Dim r As Range
+Dim Count As Integer
+Dim i As Integer
+Dim wb As Workbook
+Dim MovementWb As Workbook
+Dim k As Integer
+Dim ActCell As Range
+Dim WorkWb As Workbook
+
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    End If
+Next wb
+
+WorkWb.Activate
+Worksheets("CAD").Activate
+
+If Range("C3") = "" Then
+    Exit Sub
+End If
+
+i = 0
+For Each r In Range("C3", Range("C2").End(xlDown))
+    If r.Offset(0, -1).Value = "RECEIVE" And r.Font.Bold = False Then
+        i = i + 1
+    End If
+Next r
+
+If i = 0 Then
+    Exit Sub
+End If
+
+ReDim Adaptiv(i - 1)
+ReDim Nominal(i - 1)
+ReDim Cusip(i - 1)
+
+
+i = 0
+For Each r In Range("C3", Range("C2").End(xlDown))
+    If r.Offset(0, -1).Value = "RECEIVE" And r.Font.Bold = False Then
+        i = i + 1
+        Adaptiv(i - 1) = r.Value
+        Nominal(i - 1) = r.Offset(0, 2).Value
+        Cusip(i - 1) = r.Offset(0, 4).Value
+    End If
+Next r
+
+
+' ******* Second Part of Procedure*******
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        Set MovementWb = wb
+    End If
+Next wb
+
+If MovementWb Is Nothing Then
+    Exit Sub
+End If
+
+
+
+MovementWb.Activate
+
+Sheets("CAD Collat Mvt In&Out").Activate
+
+
+For k = 0 To i - 1
+    If Range("D9") = "" Then
+        Range("D9").Select
+    Else:
+        Range("D8").End(xlDown).Offset(1, 0).Select
+    End If
+    Set ActCell = ActiveCell
+        With ActCell
+            .Offset(0, -1).Value = "RECEIVE"
+            .Value = Adaptiv(k)
+            .Offset(0, 1).Value = Nominal(k)
+            .Offset(0, 2).Value = Cusip(k)
+        End With
+
+Next k
+
+Erase Adaptiv
+Erase Nominal
+Erase Cusip
+
+End Sub
+
+Sub CompleteOutboundSD()
+
+Dim Adaptiv() As String
+Dim Nominal() As Long
+Dim Cusip() As String
+Dim r As Range
+Dim Count As Integer
+Dim i As Integer
+Dim wb As Workbook
+Dim MovementWb As Workbook
+Dim k As Integer
+Dim ActCell As Range
+Dim WorkWb As Workbook
+
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    End If
+Next wb
+
+WorkWb.Activate
+Worksheets("CAD").Activate
+
+If Range("C3") = "" Then
+    Exit Sub
+End If
+
+i = 0
+For Each r In Range("C3", Range("C2").End(xlDown))
+    If r.Offset(0, -1).Value = "DELIVER" And r.Font.Bold = False Then
+        i = i + 1
+    End If
+Next r
+
+If i = 0 Then
+    Exit Sub
+End If
+
+ReDim Adaptiv(i - 1)
+ReDim Nominal(i - 1)
+ReDim Cusip(i - 1)
+
+
+i = 0
+For Each r In Range("C3", Range("C2").End(xlDown))
+    If r.Offset(0, -1).Value = "DELIVER" And r.Font.Bold = False Then
+        i = i + 1
+        Adaptiv(i - 1) = r.Value
+        Nominal(i - 1) = r.Offset(0, 2).Value
+        Cusip(i - 1) = r.Offset(0, 4).Value
+    End If
+Next r
+
+
+' ******* Second Part of Procedure*******
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        Set MovementWb = wb
+    End If
+Next wb
+
+If MovementWb Is Nothing Then
+    Exit Sub
+End If
+
+
+
+MovementWb.Activate
+
+Sheets("CAD Collat Mvt In&Out").Activate
+
+
+For k = 0 To i - 1
+    If Range("D9") = "" Then
+        Range("D9").Select
+    Else:
+        Range("D8").End(xlDown).Offset(1, 0).Select
+    End If
+    Set ActCell = ActiveCell
+        With ActCell
+            .Offset(0, -1).Value = "DELIVER"
+            .Value = Adaptiv(k)
+            .Offset(0, 1).Value = Nominal(k)
+            .Offset(0, 2).Value = Cusip(k)
+        End With
+
+Next k
+
+Erase Adaptiv
+Erase Nominal
+Erase Cusip
+
+End Sub
+
+
+Sub CompleteSEGSD()
+
+Dim Adaptiv() As String
+Dim Nominal() As Long
+Dim Cusip() As String
+Dim r As Range
+Dim Count As Integer
+Dim i As Integer
+Dim wb As Workbook
+Dim MovementWb As Workbook
+Dim k As Integer
+Dim ActCell As Range
+Dim WorkWb As Workbook
+Dim Direction() As String
+
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    End If
+Next wb
+
+WorkWb.Activate
+Worksheets("CAD").Activate
+
+If Range("C3") = "" Then
+    Exit Sub
+End If
+
+
+i = 0
+For Each r In Range("C3", Range("C2").End(xlDown))
+    If r.Font.Bold = True Then
+        i = i + 1
+    End If
+Next r
+
+If i = 0 Then
+    MsgBox "No SEG Movement for Same Day"
+    Exit Sub
+End If
+
+ReDim Adaptiv(i - 1)
+ReDim Nominal(i - 1)
+ReDim Cusip(i - 1)
+ReDim Direction(i - 1)
+
+
+i = 0
+For Each r In Range("C3", Range("C2").End(xlDown))
+    If r.Font.Bold = True Then
+        i = i + 1
+        Direction(i - 1) = r.Offset(0, -1).Value
+        Adaptiv(i - 1) = r.Value
+        Nominal(i - 1) = r.Offset(0, 2).Value
+        Cusip(i - 1) = r.Offset(0, 4).Value
+    End If
+Next r
+
+
+' ******* Second Part of Procedure*******
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        Set MovementWb = wb
+    End If
+Next wb
+
+If MovementWb Is Nothing Then
+    MsgBox "SEG Worksheet is not open"
+    Exit Sub
+End If
+
+
+
+MovementWb.Activate
+
+Sheets("CAD SEG Mvt In&Out").Activate
+
+
+For k = 0 To i - 1
+    If Range("C9") = "" Then
+        Range("C9").Select
+    Else:
+        Range("C8").End(xlDown).Offset(1, 0).Select
+    End If
+    Set ActCell = ActiveCell
+        With ActCell
+            .Offset(0, -1).Value = Direction(k)
+            .Value = Adaptiv(k)
+            .Offset(0, 1).Value = Nominal(k)
+            .Offset(0, 2).Value = Cusip(k)
+        End With
+
+Next k
+
+Erase Adaptiv
+Erase Nominal
+Erase Cusip
+
+End Sub
+
+Sub CompleteSEGND()
+
+Dim Adaptiv() As String
+Dim Nominal() As Long
+Dim Cusip() As String
+Dim r As Range
+Dim Count As Integer
+Dim i As Integer
+Dim wb As Workbook
+Dim MovementWb As Workbook
+Dim k As Integer
+Dim ActCell As Range
+Dim WorkWb As Workbook
+Dim Direction() As String
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*work*" Then
+        Set WorkWb = wb
+    End If
+Next wb
+
+
+WorkWb.Activate
+Worksheets("CAD").Activate
+
+If Range("M3") = "" Then
+    Exit Sub
+End If
+
+
+
+i = 0
+For Each r In Range("M3", Range("M2").End(xlDown))
+    If r.Font.Bold = True Then
+        i = i + 1
+    End If
+Next r
+
+If i = 0 Then
+    MsgBox "No SEG Movement for Next Day"
+    Exit Sub
+End If
+
+ReDim Adaptiv(i - 1)
+ReDim Nominal(i - 1)
+ReDim Cusip(i - 1)
+ReDim Direction(i - 1)
+
+
+i = 0
+For Each r In Range("M3", Range("M2").End(xlDown))
+    If r.Font.Bold = True Then
+        i = i + 1
+        Direction(i - 1) = r.Offset(0, -1).Value
+        Adaptiv(i - 1) = r.Value
+        Nominal(i - 1) = r.Offset(0, 2).Value
+        Cusip(i - 1) = r.Offset(0, 4).Value
+    End If
+Next r
+
+
+' ******* Second Part of Procedure*******
+
+
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        Set MovementWb = wb
+    End If
+Next wb
+
+If MovementWb Is Nothing Then
+    MsgBox "SEG Worksheet is not open"
+    Exit Sub
+End If
+
+
+
+MovementWb.Activate
+
+Sheets("CAD SEG Mvt In&Out").Activate
+
+
+For k = 0 To i - 1
+    If Range("C9") = "" Then
+        Range("C9").Select
+    Else:
+        Range("C8").End(xlDown).Offset(1, 0).Select
+    End If
+    Set ActCell = ActiveCell
+        With ActCell
+            .Offset(0, -1).Value = Direction(k)
+            .Value = Adaptiv(k)
+            .Offset(0, 1).Value = Nominal(k)
+            .Offset(0, 2).Value = Cusip(k)
+        End With
+
+Next k
+
+Erase Adaptiv
+Erase Nominal
+Erase Cusip
+
+End Sub
+Sub OpenFile()
+
+Dim fd As FileDialog
+Dim ActionClicked As Boolean
+Dim Response As Integer
+
+Application.AskToUpdateLinks = False
+KillIt = False
+
+Set fd = Application.FileDialog(msoFileDialogOpen)
+fd.AllowMultiSelect = False
+
+ActionClicked = fd.Show
+
+If Not ActionClicked Then
+    Exit Sub
+End If
+On Error GoTo ErrorHandling
+
+fd.Execute
+Application.AskToUpdateLinks = True
+
+
+Exit Sub
+ErrorHandling:
+Response = MsgBox("Do you still want to copy the information to the sheets?", vbYesNo, "Continue with Procedure?")
+If Response = vbNo Then KillIt = True
+End Sub
+
+
+Sub NextDayMovement()
+Dim wb As Workbook
+
+
+
+KillIt = False
+Call OpenFile
+If KillIt = True Then Exit Sub
+
+Call CompleteOutboundND
+Call CompleteInboundND
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        wb.Activate
+    End If
+Next wb
+
+
+
+End Sub
+
+Sub SameDayMovement()
+Dim wb As Workbook
+KillIt = False
+Call OpenFile
+If KillIt = True Then Exit Sub
+
+Call CompleteOutboundSD
+Call CompleteInboundSD
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        wb.Activate
+    End If
+Next wb
+
+End Sub
+
+
+Sub SEGMovementSD()
+Dim wb As Workbook
+KillIt = False
+Call OpenFile
+If KillIt = True Then Exit Sub
+
+Call CompleteSEGSD
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        wb.Activate
+    End If
+Next wb
+
+
+End Sub
+
+Sub SEGMovementND()
+Dim wb As Workbook
+KillIt = False
+Call OpenFile
+If KillIt = True Then Exit Sub
+
+Call CompleteSEGND
+
+For Each wb In Workbooks
+    If LCase(wb.Name) Like "*collat movements*" Then
+        wb.Activate
+    End If
+Next wb
+
+
+End Sub
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
