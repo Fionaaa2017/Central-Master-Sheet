@@ -1,0 +1,372 @@
+Option Explicit
+
+
+Sub Calypso()
+
+Dim mCalls As Range
+Dim s As String
+Dim r As Range
+Dim InS As String
+Dim OutS As String
+Dim InN As String
+Dim OutN As String
+Dim ws As Worksheet
+Dim Count As Integer
+
+Application.ScreenUpdating = False
+
+Call ValidateData
+
+Set ws = ActiveSheet
+
+CalypsoSheet.Range("A1:X100").ClearContents
+CalypsoSheet.Range("A1:X100").ClearFormats
+
+Inbound.Activate
+
+s = ""
+InS = ""
+InN = ""
+
+Count = Range("C13", Range("C12").End(xlDown)).Count
+
+Set mCalls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In mCalls
+    If s = "" Then
+        s = r.Value
+    Else
+    s = s & "," & r.Value
+    End If
+    
+    If InS = "" And r.Offset(0, 5).Value = "Today" Then
+        InS = r.Value
+    ElseIf r.Offset(0, 5).Value = "Today" Then
+        InS = InS & "," & r.Value
+    End If
+    
+    If InN = "" And r.Offset(0, 5).Value = "Tomorrow" Then
+        InN = r.Value
+    ElseIf r.Offset(0, 5).Value = "Tomorrow" Then
+        InN = InN & "," & r.Value
+    End If
+Next r
+
+If InStr(1, s, "TDX") > 0 Then
+    s = s & ",TD"
+End If
+
+CalypsoSheet.Activate
+Range("B3").Value = "InBound:"
+Range("C3").Value = s
+Range("B9").Value = "InBound SameDay"
+Range("C9").Value = InS
+Range("B13").Value = "InBound NextDay"
+Range("C13").Value = InN
+
+Outbound.Activate
+
+s = ""
+OutS = ""
+OutN = ""
+
+Set mCalls = Range("C13", Range("C12").End(xlDown))
+
+For Each r In mCalls
+
+    If s = "" Then
+        s = r.Value
+    Else
+
+    s = s & "," & r.Value
+    End If
+    
+    If OutS = "" And r.Offset(0, 5).Value = "Today" Then
+        OutS = r.Value
+    ElseIf r.Offset(0, 5).Value = "Today" Then
+        OutS = OutS & "," & r.Value
+    End If
+    
+    If OutN = "" And r.Offset(0, 5).Value = "Tomorrow" Then
+        OutN = r.Value
+    ElseIf r.Offset(0, 5).Value = "Tomorrow" Then
+        OutN = OutN & "," & r.Value
+    End If
+     
+Next r
+
+If InStr(1, s, "TDX") > 0 Then
+    s = s & ",TD"
+End If
+
+CalypsoSheet.Activate
+
+Range("B5").Value = "OutBound:"
+Range("C5").Value = s
+Range("B7").Value = "ALL:"
+
+If Range("C3").Value = "" Then
+    Range("C7").Value = Range("C5").Value
+ElseIf Range("C5").Value = "" Then
+    Range("C7").Value = Range("C3").Value
+Else: Range("C7").Value = Range("C3").Value & "," & Range("C5").Value
+End If
+
+
+Range("B11").Value = "OutBound SameDay"
+Range("C11").Value = OutS
+Range("B15").Value = "OutBound NextDay"
+Range("C15").Value = OutN
+
+With CalypsoSheet
+    .Range("B1:C50").Columns.AutoFit
+    .Range("A1:X100").Interior.Color = vbWhite
+    .Range("B3:C15").Borders.LineStyle = xlContinuous
+    .Range("B3:C15").Borders.Weight = xlMedium
+End With
+
+CalypsoSheet.Activate
+
+If ws.Name = "InBound" Then
+    Range("C3").Select
+    Selection.Copy
+Else:
+    Range("C5").Select
+    Selection.Copy
+End If
+
+ws.Activate
+
+Application.ScreenUpdating = True
+
+End Sub
+
+
+
+Sub SwitchToInbound()
+Inbound.Activate
+Range("C11").End(xlDown).Offset(1, 0).Select
+End Sub
+
+Sub SwitchToOutbound()
+Outbound.Activate
+Range("C11").End(xlDown).Offset(1, 0).Select
+End Sub
+
+Sub HideRows()
+Range("A1:A11").EntireRow.Hidden = True
+End Sub
+
+Sub UnHideRows()
+Range("A1:A11").EntireRow.Hidden = False
+End Sub
+
+Sub DeleteSelectedMC()
+Dim r As Range
+
+Set r = ActiveCell
+
+If r = "" Then
+    MsgBox "Select a an Adaptiv Code"
+    Exit Sub
+End If
+
+If r.Column <> 3 Then
+    MsgBox "Select a an Adaptiv Code"
+    Exit Sub
+End If
+
+If r.Row < 13 Then
+    MsgBox "Select a an Adaptiv Code"
+    Exit Sub
+End If
+
+Set r = ActiveCell
+
+If ActiveSheet.Name = "OutBound" Then
+    r.ClearContents
+    Range(r.Offset(0, 2), r.Offset(0, 6)).ClearContents
+    Range(r.Offset(0, 8), r.Offset(0, 11)).ClearContents
+End If
+    
+If ActiveSheet.Name = "InBound" Then
+    r.ClearContents
+    Range(r.Offset(0, 2), r.Offset(0, 11)).ClearContents
+End If
+    
+End Sub
+Sub GoDown()
+Range("A57").Select
+End Sub
+
+Sub GoUp()
+Range("C13").Select
+End Sub
+
+Sub ClearFileDestinations()
+
+Inbound.Range("AV12:AW16").ClearContents
+iGles.Range("AV1").ClearContents
+iGlesCAD.Range("AV1").ClearContents
+
+End Sub
+
+
+Sub SortByTime()
+
+Inbound.Range("C12").Sort _
+        Key1:=Inbound.Columns("L"), _
+        Header:=xlGuess
+       
+Outbound.Range("C12").Sort _
+        Key1:=Outbound.Columns("L"), _
+        Header:=xlGuess
+End Sub
+
+Sub UpdateAdaptivCodes()
+    Dim ReportDate As String
+    Dim ReportWb As Workbook
+    Dim MyWorkbook As Workbook
+    Dim FileName As String
+    Dim ws As Worksheet
+
+
+Set ws = ActiveSheet
+Application.ScreenUpdating = False
+
+
+AdaptivCodes.Visible = xlSheetVisible
+AdaptivCodes.Activate
+AdaptivCodes.Cells.Clear
+
+If Weekday(Date) = 2 Then
+    ReportDate = Format(Date - 3, "yyyymmdd")
+Else
+    ReportDate = Format(Date - 1, "yyyymmdd")
+End If
+  
+FileName = "\\Cmtowpcalpfil01\BMO_PRD\" & ReportDate & "\Collateral\CMG_Internal_Reports\CSA_CPTY_exposure_" & ReportDate & ".xls"
+
+Set ReportWb = Workbooks.Open(FileName)
+'update adaptive codes
+
+Range(Range("C14"), Range("C" & Cells.rows.Count).End(xlUp)).Copy
+
+AdaptivCodes.Range("A1").PasteSpecial xlPasteValues
+
+Range(Range("B14"), Range("B" & Cells.rows.Count).End(xlUp)).Copy
+
+AdaptivCodes.Range("B1").PasteSpecial xlPasteValues
+
+
+'update CSA Contracts
+
+Range(Range("BE14"), Range("BE" & Cells.rows.Count).End(xlUp)).Copy
+Contracts.Range("A1").PasteSpecial xlPasteValues
+
+Application.DisplayAlerts = False
+ReportWb.Close
+
+AdaptivCodes.Visible = xlSheetHidden
+
+ws.Activate
+
+MsgBox "Adaptiv codes & Contracts are updated succesfully"
+
+
+
+End Sub
+
+Sub clearcontent()
+
+Dim wb As Workbook
+Dim wsThis, ws As Worksheets
+Dim Rng As Range
+
+Set wb = ThisWorkbook
+Set wsThis = wb.Sheets("InBound")
+
+Set Rng = wsThis.Range(Cells(13, 3), Cells(100, 14))
+Rng.ClearContents
+
+
+
+End Sub
+
+Sub clearcontentOut()
+
+Dim wb As Workbook
+Dim wsThis, ws As Worksheets
+Dim Rng As Range
+Dim Rng2 As Range
+
+Set wb = ThisWorkbook
+Set wsThis = wb.Sheets("OutBound")
+
+Set Rng = wsThis.Range(Cells(13, 3), Cells(100, 14))
+Set Rng2 = wsThis.Range("X:AA")
+Rng.ClearContents
+Rng2.Clear
+ 
+wsThis.Range(Cells(13, 3), Cells(63, 14)).Select
+
+    With Selection.Interior
+        .Pattern = xlNone
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+End Sub
+
+Sub saveworksheet()
+Dim strPath, strName, strDate As String
+strPath = Inbound.Range("AW15") + "\LogSheet Records"
+
+strName = Inbound.Range("A34")
+strDate = Format(Date, "mmm dd yy")
+ActiveWorkbook.SaveAs FileName:=strPath + "\" + strName + " Worksheet " + strDate + ".xlsm", FileFormat:=52
+
+End Sub
+
+Sub TransferNameMech()
+
+Dim FileName As String
+
+FileName = "NEW GL_Master Sheet - Consolidated IBUK Entries.xls"
+If IsWorkBookOpen(FileName) = True Then
+    Workbooks(FileName).Sheets("CAD").Range("O33") = ThisWorkbook.Sheets(1).Range("A34").Value
+    Workbooks(FileName).Sheets("CAD").Range("O35") = "Lung Choi/Ryan Hayes"
+    
+    With Workbooks(FileName).Sheets("CAD").Range("O33")
+    .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    
+    With Workbooks(FileName).Sheets("CAD").Range("O35")
+        .HorizontalAlignment = xlLeft
+        .VerticalAlignment = xlBottom
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+End If
+
+End Sub
+
+Function IsWorkBookOpen(Name As String) As Boolean
+    Dim xWb As Workbook
+    On Error Resume Next
+    Set xWb = Application.Workbooks.Item(Name)
+    IsWorkBookOpen = (Not xWb Is Nothing)
+End Function
+
